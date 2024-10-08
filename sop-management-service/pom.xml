@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.team</groupId>
-    <artifactId>sops-service</artifactId>
+    <artifactId>sop-management-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sops-service</name>
     <description>Sop Management Service</description>
@@ -48,6 +48,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>2.5.0</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

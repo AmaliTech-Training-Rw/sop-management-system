@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: authentication-service-swagger
+
+# OpenAPI and Swagger configuration
+openapi:
+  service:
+    title: authentication-service
+    version: 1.0.0
+    url: http://localhost:8084
+
+springdoc:
+  api-docs:
+    path: /authentication-service/v3/api-docs
+  swagger-ui:
+    path: /authentication-service/swagger-ui.html
