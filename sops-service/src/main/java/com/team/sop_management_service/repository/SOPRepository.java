@@ -2,7 +2,9 @@ package com.team.sop_management_service.repository;
 
 import com.team.sop_management_service.models.SOP;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface SOPRepository extends MongoRepository<SOP, String> {
     // You can define custom query methods here if needed
 }
