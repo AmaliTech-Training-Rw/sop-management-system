@@ -20,22 +20,12 @@ public class SOP {
     @Id
     private String sopId; // In MongoDB, we usually use String for ID.
 
-    @NotBlank(message = "SOP title is mandatory")
+   // @NotBlank(message = "SOP title is mandatory")
     private String title;
 
     private Visibility visibility;
 
-    @DBRef // Reference to the User entity for the author
-    private User author;
-
-    @DBRef // Reference to the User entity for reviewers
-    private List<User> reviewers;
-
-    @DBRef // Reference to the User entity for the approver
-    private User approver;
-
-    @DBRef // Reference to the Department entity
-    private Department department;
+    private ApprovalPipeline approvalPipeline; // The pipeline of assigned users for approval
 
     private SOPStatus status;
 }
