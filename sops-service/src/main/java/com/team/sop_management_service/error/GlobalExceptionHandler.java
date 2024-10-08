@@ -23,14 +23,14 @@ public class GlobalExceptionHandler {
     }
 
     // Handle InvalidPipelineException
-    @ExceptionHandler(InvalidPipelineException.class)
-    public ResponseEntity<String> handleInvalidPipelineException(InvalidPipelineException e) {
+    @ExceptionHandler(InvalidSOPException.class)
+    public ResponseEntity<String> handleInvalidPipelineException(InvalidSOPException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     // Handle SOPInitiationException
-    @ExceptionHandler(SOPInitiationException.class)
-    public ResponseEntity<String> handleSOPInitiationException(SOPInitiationException e) {
+    @ExceptionHandler(SOPNotFoundException.class)
+    public ResponseEntity<String> handleSOPInitiationException(SOPNotFoundException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
