@@ -1,0 +1,322 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sop-management-system
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discovery-service
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+        - name: discovery-service
+          image: vg1k2/sop-management-system-discovery-service:1.0.0
+          ports:
+            - containerPort: 8761
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "8761"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: discovery-service
+  ports:
+    - protocol: TCP
+      port: 8761
+      targetPort: 8761
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication-service
+  template:
+    metadata:
+      labels:
+        app: authentication-service
+    spec:
+      containers:
+        - name: authentication-service
+          image: vg1k2/sop-management-system-authentication-service:1.0.0
+          ports:
+            - containerPort: 6061
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "6061"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "authentication-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: authentication-service
+  ports:
+    - protocol: TCP
+      port: 6061
+      targetPort: 6061
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comments-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comments-service
+  template:
+    metadata:
+      labels:
+        app: comments-service
+    spec:
+      containers:
+        - name: comments-service
+          image: vg1k2/sop-management-system-comments-service:1.0.0
+          ports:
+            - containerPort: 8086
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "8086"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "comments-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comments-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: comments-service
+  ports:
+    - protocol: TCP
+      port: 8086
+      targetPort: 8086
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: vg1k2/sop-management-system-gateway-service:1.0.0
+          ports:
+            - containerPort: 6064
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "6064"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "gateway-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: gateway-service
+  ports:
+    - protocol: TCP
+      port: 6064
+      targetPort: 6064
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-service
+  template:
+    metadata:
+      labels:
+        app: kafka-service
+    spec:
+      containers:
+        - name: kafka-service
+          image: vg1k2/sop-management-system-kafka-service:1.0.0
+          ports:
+            - containerPort: 6065
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "6065"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "kafka-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: kafka-service
+  ports:
+    - protocol: TCP
+      port: 6065
+      targetPort: 6065
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications-service
+  template:
+    metadata:
+      labels:
+        app: notifications-service
+    spec:
+      containers:
+        - name: notifications-service
+          image: vg1k2/sop-management-system-notifications-service:1.0.0
+          ports:
+            - containerPort: 6066
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "6066"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "notifications-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: notifications-service
+  ports:
+    - protocol: TCP
+      port: 6066
+      targetPort: 6066
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sops-service
+  namespace: sop-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sops-service
+  template:
+    metadata:
+      labels:
+        app: sops-service
+    spec:
+      containers:
+        - name: sops-service
+          image: vg1k2/sop-management-system-sops-service:1.0.0
+          ports:
+            - containerPort: 6067
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_PORT
+              value: "6067"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+            - name: SPRING_APPLICATION_NAME
+              value: "sops-service"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sops-service
+  namespace: sop-management-system
+spec:
+  selector:
+    app: sops-service
+  ports:
+    - protocol: TCP
+      port: 6067
+      targetPort: 6067
