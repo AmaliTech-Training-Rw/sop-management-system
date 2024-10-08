@@ -35,6 +35,10 @@ spring:
           filters:
             - name: AuthFilter
             - StripPrefix=1
+        - id: email_service
+          uri: lb://email-service
+          predicates:
+            - Path=/email-service/**
 
 springdoc:
   enable-native-support: true
