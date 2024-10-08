@@ -46,7 +46,7 @@ public class AuthController {
             authService.register(requestDto);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>("User registered successfully", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error registering user", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
     }
