@@ -1,275 +1,201 @@
-//package com.team.sop_management_service.service;
-//
-//import com.team.sop_management_service.error.InvalidPipelineException;
-//import com.team.sop_management_service.error.SOPInitiationException;
-//import com.team.sop_management_service.error.SOPRetrievalException;
-//import com.team.sop_management_service.models.ApprovalPipeline;
-//import com.team.sop_management_service.models.Department;
-//import com.team.sop_management_service.models.SOP;
-//import com.team.sop_management_service.models.User;
-//import com.team.sop_management_service.repository.SOPRepository;
-//import com.team.sop_management_service.enums.Visibility;
-//import com.team.sop_management_service.enums.SOPStatus;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//
-//import java.util.List;
-//
-//@Service
-//public class SOPService {
-//    private static final Logger logger = LoggerFactory.getLogger(SOPService.class);
-//
-//    private final SOPRepository sopRepository;
-//   // private final UserRepository userRepository;
-//   // private final DepartmentRepository departmentRepository;
-//   // private final NotificationFactory notificationFactory;
-//
-//    // Constructor injection of required dependencies
-////    @Autowired
-////    public SOPService(SOPRepository sopRepository, //UserRepository userRepository,
-////                      DepartmentRepository departmentRepository, NotificationFactory notificationFactory) {
-////        this.sopRepository = sopRepository;
-////        this.userRepository = userRepository;
-////        this.departmentRepository = departmentRepository;
-////        this.notificationFactory = notificationFactory;
-////    }
-//
-//
-//    public SOPService(SOPRepository sopRepository) {
-//        this.sopRepository = sopRepository;
-//    }
-//
-//    /**
-//     * Initiates a new SOP with the provided title, visibility, approval pipeline, and HoD.
-//     * Validates the pipeline before saving the SOP and sends notifications.
-//     */
-//    @Transactional
-//    public SOP initiateSOP(String title, Visibility visibility, ApprovalPipeline approvalPipeline, User hod) {
-//        try {
-//            logger.info("Initiating SOP with title: {}, visibility: {}, and HoD: {}", title, visibility, hod.getName());
-//
-//            // Validate the approval pipeline based on HoD and visibility
-//            validatePipeline(approvalPipeline, hod, visibility);
-//
-//            // Create and save the SOP
-//            SOP sop = new SOP();
-//            sop.setTitle(title);
-//            sop.setVisibility(visibility);
-//            sop.setApprovalPipeline(approvalPipeline);
-//            sop.setStatus(SOPStatus.DRAFT);
-//
-//            SOP savedSOP = sopRepository.save(sop);
-//
-//            logger.info("SOP initiated successfully: {}", savedSOP);
-//
-//            // Send notification to the author
-//            sendNotification(savedSOP);
-//
-//            return savedSOP;
-//        } catch (InvalidPipelineException e) {
-//            logger.error("Invalid pipeline: {}", e.getMessage(), e);
-//            throw e;
-//        } catch (Exception e) {
-//            logger.error("Error initiating SOP: {}", e.getMessage(), e);
-//            throw new SOPInitiationException("Failed to initiate SOP", e);
-//        }
-//    }
-//
-//    /**
-//     * Validates the approval pipeline for department-level visibility and ensures the approver is valid.
-//     */
-//    private void validatePipeline(ApprovalPipeline pipeline, User hod, Visibility visibility) {
-//        try {
-//            if (visibility == Visibility.DEPARTMENT) {
-//                // Ensure all staff in the pipeline belong to the same department for department-level visibility
-//                if (!isSameDepartment(hod, pipeline)) {
-//                    logger.warn("Pipeline validation failed: staff not from the same department");
-//                    throw new InvalidPipelineException("All staff must be from the same department for department-level visibility.");
-//                }
-//            }
-//
-//            // Ensure the approver is valid (must be HoD or a staff member)
-//            if (!isValidApprover(pipeline.getApprover(), hod)) {
-//                logger.warn("Pipeline validation failed: approver is not valid");
-//                throw new InvalidPipelineException("Approver must be a staff member or the HoD.");
-//            }
-//
-//            logger.info("Pipeline validated successfully");
-//        } catch (Exception e) {
-//            logger.error("Error validating pipeline: {}", e.getMessage(), e);
-//            throw new InvalidPipelineException("Failed to validate pipeline", e);
-//        }
-//    }
-//
-//    /**
-//     * Checks if all users in the approval pipeline belong to the same department as the HoD.
-//     */
-//    private boolean isSameDepartment(User hod, ApprovalPipeline pipeline) {
-//        Department hodDepartment = hod.getDepartment();
-//        return pipeline.getAuthor().getDepartment().equals(hodDepartment) &&
-//                pipeline.getApprover().getDepartment().equals(hodDepartment) &&
-//                pipeline.getReviewers().stream().allMatch(reviewer -> reviewer.getDepartment().equals(hodDepartment));
-//    }
-//
-//    /**
-//     * Validates whether the approver is the HoD or from the same department as the HoD.
-//     */
-//    private boolean isValidApprover(User approver, User hod) {
-//        return approver.equals(hod) || approver.getDepartment().equals(hod.getDepartment());
-//    }
-//
-//    /**
-//     * Sends a notification to the SOP author once the SOP is successfully initiated.
-//     */
-//    private void sendNotification(SOP sop) {
-//        try {
-//            Notification notification = notificationFactory.createNotification(
-//                    sop.getApprovalPipeline().getAuthor().getEmail(),
-//                    "New SOP Task",
-//                    "You have been assigned as the Author for the SOP: " + sop.getTitle()
-//            );
-//            notification.send();
-//            logger.info("Notification sent successfully to {}", sop.getApprovalPipeline().getAuthor().getEmail());
-//        } catch (Exception e) {
-//            logger.error("Failed to send notification: {}", e.getMessage(), e);
-//            // No rethrow, as failure to send a notification shouldn't prevent SOP initiation
-//        }
-//    }
-//
-//    /**
-//     * Retrieves all SOPs from the database.
-//     */
-//    public List<SOP> getAllSOPs() {
-//        try {
-//            logger.info("Retrieving all SOPs");
-//            return sopRepository.findAll();
-//        } catch (Exception e) {
-//            logger.error("Error retrieving SOPs: {}", e.getMessage(), e);
-//            throw new SOPRetrievalException("Failed to retrieve SOPs", e);
-//        }
-//    }
-//}
-//
-
-
 package com.team.sop_management_service.service;
 
-import com.team.sop_management_service.error.InvalidPipelineException;
-import com.team.sop_management_service.error.SOPInitiationException;
-import com.team.sop_management_service.error.SOPRetrievalException;
-import com.team.sop_management_service.models.ApprovalPipeline;
-import com.team.sop_management_service.models.Department;
+import com.team.sop_management_service.error.InvalidSOPException;
+import com.team.sop_management_service.error.SOPNotFoundException;
 import com.team.sop_management_service.models.SOP;
+import com.team.sop_management_service.models.ApprovalPipeline;
 import com.team.sop_management_service.models.User;
 import com.team.sop_management_service.repository.SOPRepository;
 import com.team.sop_management_service.enums.Visibility;
 import com.team.sop_management_service.enums.SOPStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SOPService {
     private static final Logger logger = LoggerFactory.getLogger(SOPService.class);
 
-    @Autowired
     private final SOPRepository sopRepository;
+   // private final NotificationService notificationService;
 
+//    @Autowired
+//    public SOPService(SOPRepository sopRepository, NotificationService notificationService) {
+//        this.sopRepository = sopRepository;
+//        this.notificationService = notificationService;
+//    }
+
+
+    @Autowired
     public SOPService(SOPRepository sopRepository) {
         this.sopRepository = sopRepository;
     }
 
-//    @Autowired
-//    public SOPService(@Qualifier("sopRepository")SOPRepository sopRepository) {
-//        this.sopRepository = sopRepository;
-//    }
-
-    @Transactional
-//    public SOP initiateSOP(String title, Visibility visibility, ApprovalPipeline approvalPipeline, String hodDepartmentId) {
-       public SOP initiateSOP(SOP sop, String hodDepartmentId) {
-
+    @Transactional(propagation = Propagation.REQUIRED)
+    public SOP initiateSOP(SOP sop) {
         try {
-            logger.info("Initiating SOP with title: {}, visibility: {}", sop.getTitle(), sop.getVisibility());
-
-            // Validate the approval pipeline based on HoD department ID and visibility
-        //    validatePipeline(sop.getApprovalPipeline(), hodDepartmentId, sop.getVisibility());
-
-            //SOP sop = new SOP();
-//            sop.setTitle(title);
-//            sop.setVisibility(visibility);
-//            sop.setApprovalPipeline(approvalPipeline);
-//            sop.setStatus(SOPStatus.DRAFT);
-
+            logger.info("Initiating SOP: {}", sop.getTitle());
+            validateSOP(sop);
+            sop.setStatus(SOPStatus.DRAFT);
             SOP savedSOP = sopRepository.save(sop);
-            logger.info("SOP initiated successfully: {}", savedSOP);
-
-            sendNotification(savedSOP);
+           // notifyAuthor(savedSOP);
             return savedSOP;
-        } catch (InvalidPipelineException e) {
-            logger.error("Invalid pipeline: {}", e.getMessage(), e);
+        } catch (InvalidSOPException e) {
+            logger.error("Failed to initiate SOP: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            logger.error("Error initiating SOP: {}", e.getMessage(), e);
-            throw new SOPInitiationException("Failed to initiate SOP", e);
+            logger.error("Unexpected error while initiating SOP", e);
+            throw new RuntimeException("Failed to initiate SOP", e);
         }
     }
 
-    private void validatePipeline(ApprovalPipeline pipeline, String hodDepartmentId, Visibility visibility) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public SOP saveSOP(SOP sop) {
         try {
-            if (visibility == Visibility.DEPARTMENT) {
-                // Ensure all staff in the pipeline belong to the same department for department-level visibility
-                if (!isSameDepartment(String.valueOf(Integer.parseInt(hodDepartmentId)), pipeline)) {
-                    logger.warn("Pipeline validation failed: staff not from the same department");
-                    throw new InvalidPipelineException("All staff must be from the same department for department-level visibility.");
-                }
-            }
-
-            // Ensure the approver is valid (must be HoD or a staff member)
-            if (!isValidApprover(pipeline.getApprover(), hodDepartmentId)) {
-                logger.warn("Pipeline validation failed: approver is not valid");
-                throw new InvalidPipelineException("Approver must be a staff member or the HoD.");
-            }
-
-            logger.info("Pipeline validated successfully");
+            logger.info("Saving SOP: {}", sop.getTitle());
+            return sopRepository.save(sop);
         } catch (Exception e) {
-            logger.error("Error validating pipeline: {}", e.getMessage(), e);
-            throw new InvalidPipelineException("Failed to validate pipeline");
+            logger.error("Failed to save SOP", e);
+            throw new RuntimeException("Failed to save SOP", e);
         }
     }
 
-    private boolean isSameDepartment(String hodDepartmentId, ApprovalPipeline pipeline) {
-        // This is a placeholder for the actual department comparison logic
-        // You might want to check against a list of user departments to ensure they match
-        return pipeline.getAuthor().equals(hodDepartmentId) &&
-                pipeline.getApprover().equals(hodDepartmentId) &&
-                pipeline.getReviewers().stream().allMatch(reviewerId -> reviewerId.equals(hodDepartmentId));
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteSOP(String id) {
+        try {
+            logger.info("Deleting SOP with id: {}", id);
+            sopRepository.deleteById(id);
+        } catch (Exception e) {
+            logger.error("Failed to delete SOP with id: {}", id, e);
+            throw new RuntimeException("Failed to delete SOP", e);
+        }
     }
 
-    private boolean isValidApprover(String approverId, String hodDepartmentId) {
-        // Implement logic to check if the approverId matches the HoD or is from the same department
-        // For simplicity, just a comparison here
-        return approverId.equals(hodDepartmentId) || approverId.equals(hodDepartmentId); // This might need more logic
-    }
-
-    private void sendNotification(SOP sop) {
-        // Implement the notification sending logic here
-    }
-
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<SOP> getAllSOPs() {
         try {
             logger.info("Retrieving all SOPs");
             return sopRepository.findAll();
         } catch (Exception e) {
-            logger.error("Error retrieving SOPs: {}", e.getMessage(), e);
-            throw new SOPRetrievalException("Failed to retrieve SOPs", e);
+            logger.error("Failed to retrieve all SOPs", e);
+            throw new RuntimeException("Failed to retrieve SOPs", e);
         }
     }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public SOP getSOPById(String id) {
+        try {
+            logger.info("Retrieving SOP with id: {}", id);
+            return sopRepository.findById(id)
+                    .orElseThrow(() -> new SOPNotFoundException("SOP not found with id: " + id));
+        } catch (SOPNotFoundException e) {
+            logger.error("SOP not found with id: {}", id);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Failed to retrieve SOP with id: {}", id, e);
+            throw new RuntimeException("Failed to retrieve SOP", e);
+        }
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<SOP> getSOPsByVisibility(Visibility visibility) {
+        try {
+            logger.info("Retrieving SOPs with visibility: {}", visibility);
+            return sopRepository.findByVisibility(visibility);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve SOPs by visibility: {}", visibility, e);
+            throw new RuntimeException("Failed to retrieve SOPs by visibility", e);
+        }
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<SOP> getSOPsByStatus(SOPStatus status) {
+        try {
+            logger.info("Retrieving SOPs with status: {}", status);
+            return sopRepository.findByStatus(status);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve SOPs by status: {}", status, e);
+            throw new RuntimeException("Failed to retrieve SOPs by status", e);
+        }
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<SOP> getSOPsByAuthor(String authorId) {
+        try {
+            logger.info("Retrieving SOPs by author id: {}", authorId);
+            return sopRepository.findByApprovalPipeline_Author_Id(authorId);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve SOPs by author id: {}", authorId, e);
+            throw new RuntimeException("Failed to retrieve SOPs by author", e);
+        }
+    }
+
+    private void validateSOP(SOP sop) {
+        if (sop.getTitle() == null || sop.getTitle().isEmpty()) {
+            throw new InvalidSOPException("SOP title cannot be empty");
+        }
+        if (sop.getVisibility() == null) {
+            throw new InvalidSOPException("SOP visibility must be specified");
+        }
+        validateApprovalPipeline(sop.getApprovalPipeline(), sop.getVisibility());
+    }
+
+    /**
+        * Validates the approval pipeline for department-level visibility and ensures the approver is valid.
+          */
+
+    private void validateApprovalPipeline(ApprovalPipeline pipeline, Visibility visibility) {
+        // Ensure that the approval pipeline has all necessary roles
+        if (pipeline == null || pipeline.getAuthor() == null || pipeline.getApprover() == null ||
+                pipeline.getReviewers() == null || pipeline.getReviewers().isEmpty()) {
+            throw new InvalidSOPException("Invalid approval pipeline. Author, approver, and reviewers must be defined.");
+        }
+
+        User hod = pipeline.getApprover(); // Assume the HoD is the approver or a staff member
+
+        // Visibility is Department: All members must be from the same department as the HoD
+        if (visibility == Visibility.DEPARTMENT) {
+            if (!isSameDepartment(hod, pipeline.getAuthor()) ||
+                    !pipeline.getReviewers().stream().allMatch(reviewer -> isSameDepartment(hod, reviewer))) {
+                throw new InvalidSOPException("For department visibility, all staff must be from the same department.");
+            }
+        }
+
+        // Validate that the approver is either the HoD or a valid staff member
+        if (!isValidApprover(pipeline.getApprover(), hod)) {
+            throw new InvalidSOPException("Approver must be the HoD or from the same department as the HoD.");
+        }
+
+        logger.info("Approval pipeline validated successfully");
+
+        // Notify the Author after successful validation
+       // notifyAuthor(pipeline);
+    }
+
+    // Checks if both users belong to the same department
+    private boolean isSameDepartment(User user1, User user2) {
+        return user1.getDepartment().equals(user2.getDepartment());
+    }
+
+    // Validates whether the approver is the HoD or belongs to the same department
+    private boolean isValidApprover(User approver, User hod) {
+        return approver.equals(hod) || isSameDepartment(approver, hod);
+    }
+
+//    // Notifies the Author about the SOP assignment
+//    private void notifyAuthor(ApprovalPipeline pipeline) {
+//        try {
+//            SOP sop = pipeline.getSop(); // Assuming pipeline contains a reference to the SOP
+//            notificationService.sendAuthorNotification(sop);
+//        } catch (Exception e) {
+//            logger.error("Failed to send notification to author", e);
+//            // We do not throw an exception to avoid rolling back the SOP creation
+//        }
+//    }
 }

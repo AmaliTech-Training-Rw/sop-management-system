@@ -11,15 +11,15 @@ import java.util.List;
 @AllArgsConstructor
 public class ApprovalPipeline {
 
-    //@DBRef
-    private String author; // Staff assigned to create the SOP
+    @DBRef
+    private User author; // Staff assigned to create the SOP
 
-    //@DBRef
-    private List<String> reviewers; // Staff assigned to review the SOP
+    @DBRef
+    private List<User> reviewers; // Staff assigned to review the SOP
 
-    //@DBRef
-    private String approver; // Staff assigned to approve the SOP (can be HoD)
+    @DBRef
+    private User approver; // Staff assigned to approve the SOP (can be HoD)
 
-   // @DBRef
-    private String department;
+//    @DBRef
+//    private User department;
 }

@@ -20,12 +20,12 @@ public class User {
 
     private UserRole role;
 
-    @DBRef
-    private Department department;
+    //@DBRef
+    private String department;
 
     public User() {}
 
-    public User(String name, String email, UserRole role, Department department) {
+    public User(String name, String email, UserRole role, String department) {
         this.name = name;
         this.email = email;
         this.role = role;
@@ -65,11 +65,11 @@ public class User {
         this.role = role;
     }
 
-    public Department getDepartment() {
+    public String getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department department) {
+    public void setDepartment(String department) {
         this.department = department;
     }
 
