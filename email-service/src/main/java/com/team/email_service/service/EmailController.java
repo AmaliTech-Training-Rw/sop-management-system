@@ -1,77 +1,114 @@
-package com.team.email_service.service;
+package com.team.email_service.service;//package com.team.email_service.controller;
+//
+//import com.team.email_service.service.EmailService;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.concurrent.CompletableFuture;
+//
+//@RestController
+//@RequestMapping("/api/email")
+//@Api(tags = "Email Controller", description = "Endpoints for email operations")
+//public class EmailController {
+//
+//    private final EmailService emailService;
+//
+//    @Autowired
+//    public EmailController(EmailService emailService) {
+//        this.emailService = emailService;
+//    }
+//
+//    @PostMapping("/account-creation")
+//    @ApiOperation("Send account creation email")
+//    public ResponseEntity<String> sendAccountCreationEmail(@RequestParam String email) {
+//        String token = emailService.generateToken();
+//        CompletableFuture<Void> future = emailService.sendAccountCreationEmail(email, token);
+//        future.join(); // Wait for the email to be sent
+//        return ResponseEntity.ok("Account creation email sent successfully");
+//    }
+//
+//    @PostMapping("/password-reset")
+//    @ApiOperation("Send password reset email")
+//    public ResponseEntity<String> sendPasswordResetEmail(@RequestParam String email) {
+//        String otp = emailService.generateOtp();
+//        CompletableFuture<Void> future = emailService.sendPasswordResetEmail(email, otp);
+//        future.join(); // Wait for the email to be sent
+//        return ResponseEntity.ok("Password reset email sent successfully");
+//    }
+//
+//    @PostMapping("/task-notification")
+//    @ApiOperation("Send task notification email")
+//    public ResponseEntity<String> sendTaskNotification(@RequestParam String email, @RequestParam String taskDescription) {
+//        CompletableFuture<Void> future = emailService.sendTaskNotification(email, taskDescription);
+//        future.join(); // Wait for the email to be sent
+//        return ResponseEntity.ok("Task notification email sent successfully");
+//    }
+//
+//    @PostMapping("/sop-status")
+//    @ApiOperation("Send SOP status update email")
+//    public ResponseEntity<String> sendSopStatusNotification(@RequestParam String email, @RequestParam String sopTitle, @RequestParam boolean approved) {
+//        CompletableFuture<Void> future = emailService.sendSopStatusNotification(email, sopTitle, approved);
+//        future.join(); // Wait for the email to be sent
+//        return ResponseEntity.ok("SOP status update email sent successfully");
+//    }
+//}
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.team.email_service.service.EmailService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
-@RequestMapping("/email")
+@RequestMapping("/api/email")
+@Tag(name = "Email Controller", description = "Endpoints for email operations")
 public class EmailController {
 
     private final EmailService emailService;
-    private final Logger logger = LoggerFactory.getLogger(EmailController.class);
 
+    @Autowired
     public EmailController(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    @PostMapping("/send-verification")
-    public String sendVerificationEmail(@RequestParam String to) {
+    @PostMapping("/account-creation")
+    @Operation(summary = "Send account creation email")
+    public ResponseEntity<String> sendAccountCreationEmail(@RequestParam String email) {
         String token = emailService.generateToken();
-        logger.info("Request to send verification email to: {}", to);
-        emailService.sendVerificationEmail(to, token);
-        logger.info("Verification email successfully sent to: {}", to);
-        return "Verification email sent to " + to;
+        CompletableFuture<Void> future = emailService.sendAccountCreationEmail(email, token);
+        future.join(); // Wait for the email to be sent
+        return ResponseEntity.ok("Account creation email sent successfully");
     }
 
-    @PostMapping("/send-password-reset")
-    public String sendPasswordResetEmail(@RequestParam String to) {
-        String token = emailService.generateToken();
-        logger.info("Request to send password reset email to: {}", to);
-        emailService.sendPasswordResetEmail(to, token);
-        logger.info("Password reset email successfully sent to: {}", to);
-        return "Password reset email sent to " + to;
-    }
-
-    @PostMapping("/send-otp")
-    public String sendOtpEmail(@RequestParam String to) {
-        logger.info("Request to send OTP email to: {}", to);
+    @PostMapping("/password-reset")
+    @Operation(summary = "Send password reset email")
+    public ResponseEntity<String> sendPasswordResetEmail(@RequestParam String email) {
         String otp = emailService.generateOtp();
-        emailService.sendOtpEmail(to, otp);
-        logger.info("OTP email successfully sent to: {}", to);
-        return "OTP sent to " + to;
+        CompletableFuture<Void> future = emailService.sendPasswordResetEmail(email, otp);
+        future.join(); // Wait for the email to be sent
+        return ResponseEntity.ok("Password reset email sent successfully");
     }
 
-    @PostMapping("/send-task-notification")
-    public String sendTaskNotification(@RequestParam String to, @RequestParam String taskDescription) {
-        logger.info("Request to send task notification email to: {}", to);
-        emailService.sendTaskNotification(to, taskDescription);
-        logger.info("Task notification email successfully sent to: {}", to);
-        return "Task notification sent to " + to;
+    @PostMapping("/task-notification")
+    @Operation(summary = "Send task notification email")
+    public ResponseEntity<String> sendTaskNotification(@RequestParam String email, @RequestParam String taskDescription) {
+        CompletableFuture<Void> future = emailService.sendTaskNotification(email, taskDescription);
+        future.join(); // Wait for the email to be sent
+        return ResponseEntity.ok("Task notification email sent successfully");
     }
 
-    @PostMapping("/send-sop-return")
-    public String sendSopReturnNotification(@RequestParam String to, @RequestParam String sopTitle) {
-        logger.info("Request to send SOP return notification email to: {}", to);
-        emailService.sendSopReturnNotification(to, sopTitle);
-        logger.info("SOP return notification email successfully sent to: {}", to);
-        return "SOP return notification sent to " + to;
-    }
-
-    @PostMapping("/send-sop-status")
-    public String sendSopStatusNotification(@RequestParam String to, @RequestParam String sopTitle, @RequestParam boolean approved) {
-        String status = approved ? "approved" : "rejected";
-        logger.info("Request to send SOP status update ({}): {} to {}", status, sopTitle, to);
-        emailService.sendSopStatusNotification(to, sopTitle, approved);
-        logger.info("SOP status update email successfully sent to: {}", to);
-        return "SOP status update sent to " + to;
-    }
-
-    @PostMapping("/send-new-sop")
-    public String sendNewSopNotification(@RequestParam String to, @RequestParam String sopTitle) {
-        logger.info("Request to send new SOP notification email to: {}", to);
-        emailService.sendNewSopNotification(to, sopTitle);
-        logger.info("New SOP notification email successfully sent to: {}", to);
-        return "New SOP notification sent to " + to;
+    @PostMapping("/sop-status")
+    @Operation(summary = "Send SOP status update email")
+    public ResponseEntity<String> sendSopStatusNotification(@RequestParam String email, @RequestParam String sopTitle, @RequestParam boolean approved) {
+        CompletableFuture<Void> future = emailService.sendSopStatusNotification(email, sopTitle, approved);
+        future.join(); // Wait for the email to be sent
+        return ResponseEntity.ok("SOP status update email sent successfully");
     }
 }
