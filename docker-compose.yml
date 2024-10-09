@@ -1,8 +1,10 @@
+version: '3.8'
+
 services:
   discovery-service:
     build:
       context: ./discovery-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${DISCOVERY_SERVICE_PORT}
@@ -27,7 +29,7 @@ services:
   authentication-service:
     build:
       context: ./authentication-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${AUTHENTICATION_SERVICE_PORT}
@@ -55,7 +57,7 @@ services:
   comments-service:
     build:
       context: ./comments-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${COMMENTS_SERVICE_PORT}
@@ -83,7 +85,7 @@ services:
   gateway-service:
     build:
       context: ./gateway-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${GATEWAY_SERVICE_PORT}
@@ -111,7 +113,7 @@ services:
   kafka-service:
     build:
       context: ./kafka-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${KAFKA_SERVICE_PORT}
@@ -139,7 +141,7 @@ services:
   notifications-service:
     build:
       context: ./notifications-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${NOTIFICATIONS_SERVICE_PORT}
@@ -167,7 +169,7 @@ services:
   sops-service:
     build:
       context: ./sops-service
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
       args:
         JAVA_VERSION: ${JAVA_VERSION}
         APP_PORT: ${SOPS_SERVICE_PORT}

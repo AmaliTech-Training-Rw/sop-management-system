@@ -32,7 +32,7 @@
          --build-arg APP_PORT=${!port_var} \
          --no-cache \
          -t "$DOCKER_REGISTRY/$PROJECT_NAME-$service:$VERSION" \
-         -f Dockerfile "$service"
+         -f $service/Dockerfile "$service"
 
      if [ $? -ne 0 ]; then
          echo "Error building $service"
