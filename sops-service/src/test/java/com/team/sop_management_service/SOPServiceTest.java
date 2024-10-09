@@ -1,13 +1,12 @@
 package com.team.sop_management_service;
 
 import com.team.sop_management_service.error.InvalidSOPException;
-import com.team.sop_management_service.models.SOP;
+import com.team.sop_management_service.models.SOPInitiation;
 import com.team.sop_management_service.models.ApprovalPipeline;
 import com.team.sop_management_service.models.User;
-import com.team.sop_management_service.repository.SOPRepository;
+import com.team.sop_management_service.repository.SOPInitiationRepository;
 import com.team.sop_management_service.enums.Visibility;
-import com.team.sop_management_service.enums.SOPStatus;
-import com.team.sop_management_service.service.SOPService;
+import com.team.sop_management_service.service.SOPInitiationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class SOPServiceTest {
 
     @Mock
-    private SOPRepository sopRepository;
+    private SOPInitiationRepository sopRepository;
 
     @Mock
     private Logger logger;
 
     @InjectMocks
-    private SOPService sopService;
+    private SOPInitiationService sopService;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +40,7 @@ class SOPServiceTest {
     @Test
     void testInitiateSOP_ValidSOP_WithMultipleReviewers_ShouldSaveAndReturnSOP() {
         // Arrange
-        SOP sop = new SOP();
+        SOPInitiation sop = new SOPInitiation();
         sop.setTitle("Test SOP with Multiple Reviewers");
         sop.setVisibility(Visibility.DEPARTMENT);
 
@@ -65,10 +64,10 @@ class SOPServiceTest {
         pipeline.setReviewers(reviewers);
 
         sop.setApprovalPipeline(pipeline);
-        when(sopRepository.save(any(SOP.class))).thenReturn(sop);
+        when(sopRepository.save(any(SOPInitiation.class))).thenReturn(sop);
 
         // Act
-        SOP result = sopService.initiateSOP(sop);
+        SOPInitiation result = sopService.initiateSOP(sop);
 
         // Assert
         assertNotNull(result);
@@ -79,7 +78,7 @@ class SOPServiceTest {
     @Test
     void testInitiateSOP_InvalidSOP_ReviewersNotFromSameDepartment_ShouldThrowInvalidSOPException() {
         // Arrange
-        SOP sop = new SOP();
+        SOPInitiation sop = new SOPInitiation();
         sop.setTitle("Invalid SOP with Incorrect Reviewers");
         sop.setVisibility(Visibility.DEPARTMENT);
 
@@ -155,12 +154,12 @@ class SOPServiceTest {
     @Test
     void testGetSOPById_SOPExists_ShouldReturnSOP() {
         // Arrange
-        SOP sop = new SOP();
+        SOPInitiation sop = new SOPInitiation();
         sop.setSopId("123");
         when(sopRepository.findById("123")).thenReturn(Optional.of(sop));
 
         // Act
-        SOP result = sopService.getSOPById("123");
+        SOPInitiation result = sopService.getSOPById("123");
 
         // Assert
         assertNotNull(result);

@@ -2,8 +2,8 @@ package com.team.sop_management_service.controller;
 
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
-import com.team.sop_management_service.models.SOP;
-import com.team.sop_management_service.service.SOPService;
+import com.team.sop_management_service.models.SOPInitiation;
+import com.team.sop_management_service.service.SOPInitiationService;
 import com.team.sop_management_service.enums.Visibility;
 import com.team.sop_management_service.enums.SOPStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,17 @@ import java.util.List;
 public class SOPController {
     private static final Logger logger = LoggerFactory.getLogger(SOPController.class);
 
-    private final SOPService sopService;
+    private final SOPInitiationService sopService;
 
     @Autowired
-    public SOPController(SOPService sopService) {
+    public SOPController(SOPInitiationService sopService) {
         this.sopService = sopService;
     }
 
     @PostMapping("/initiate")
-    public ResponseEntity<?> initiateSOP(@RequestBody SOP sop) {
+    public ResponseEntity<?> initiateSOP(@RequestBody SOPInitiation sop) {
         try {
-            SOP initiatedSOP = sopService.initiateSOP(sop);
+            SOPInitiation initiatedSOP = sopService.initiateSOP(sop);
             return ResponseEntity.ok(initiatedSOP);
         } catch (InvalidSOPException e) {
             logger.error("Invalid SOP data: {}", e.getMessage());
@@ -42,9 +42,9 @@ public class SOPController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveSOP(@RequestBody SOP sop) {
+    public ResponseEntity<?> saveSOP(@RequestBody SOPInitiation sop) {
         try {
-            SOP savedSOP = sopService.saveSOP(sop);
+            SOPInitiation savedSOP = sopService.saveSOP(sop);
             return ResponseEntity.ok(savedSOP);
         } catch (Exception e) {
             logger.error("Failed to save SOP", e);
@@ -66,7 +66,7 @@ public class SOPController {
     @GetMapping
     public ResponseEntity<?> getAllSOPs() {
         try {
-            List<SOP> sops = sopService.getAllSOPs();
+            List<SOPInitiation> sops = sopService.getAllSOPs();
             return ResponseEntity.ok(sops);
         } catch (Exception e) {
             logger.error("Failed to retrieve all SOPs", e);
@@ -77,7 +77,7 @@ public class SOPController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getSOPById(@PathVariable String id) {
         try {
-            SOP sop = sopService.getSOPById(id);
+            SOPInitiation sop = sopService.getSOPById(id);
             return ResponseEntity.ok(sop);
         } catch (SOPNotFoundException e) {
             logger.error("SOP not found with id: {}", id);
@@ -91,7 +91,7 @@ public class SOPController {
     @GetMapping("/visibility/{visibility}")
     public ResponseEntity<?> getSOPsByVisibility(@PathVariable Visibility visibility) {
         try {
-            List<SOP> sops = sopService.getSOPsByVisibility(visibility);
+            List<SOPInitiation> sops = sopService.getSOPsByVisibility(visibility);
             return ResponseEntity.ok(sops);
         } catch (Exception e) {
             logger.error("Failed to retrieve SOPs by visibility: {}", visibility, e);
@@ -102,7 +102,7 @@ public class SOPController {
     @GetMapping("/status/{status}")
     public ResponseEntity<?> getSOPsByStatus(@PathVariable SOPStatus status) {
         try {
-            List<SOP> sops = sopService.getSOPsByStatus(status);
+            List<SOPInitiation> sops = sopService.getSOPsByStatus(status);
             return ResponseEntity.ok(sops);
         } catch (Exception e) {
             logger.error("Failed to retrieve SOPs by status: {}", status, e);
@@ -113,7 +113,7 @@ public class SOPController {
     @GetMapping("/author/{authorId}")
     public ResponseEntity<?> getSOPsByAuthor(@PathVariable String authorId) {
         try {
-            List<SOP> sops = sopService.getSOPsByAuthor(authorId);
+            List<SOPInitiation> sops = sopService.getSOPsByAuthor(authorId);
             return ResponseEntity.ok(sops);
         } catch (Exception e) {
             logger.error("Failed to retrieve SOPs by author id: {}", authorId, e);

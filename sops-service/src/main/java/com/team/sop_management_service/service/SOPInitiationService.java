@@ -2,10 +2,10 @@ package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
-import com.team.sop_management_service.models.SOP;
+import com.team.sop_management_service.models.SOPInitiation;
 import com.team.sop_management_service.models.ApprovalPipeline;
 import com.team.sop_management_service.models.User;
-import com.team.sop_management_service.repository.SOPRepository;
+import com.team.sop_management_service.repository.SOPInitiationRepository;
 import com.team.sop_management_service.enums.Visibility;
 import com.team.sop_management_service.enums.SOPStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class SOPService {
-    private static final Logger logger = LoggerFactory.getLogger(SOPService.class);
+public class SOPInitiationService {
+    private static final Logger logger = LoggerFactory.getLogger(SOPInitiationService.class);
 
-    private final SOPRepository sopRepository;
+    private final SOPInitiationRepository sopRepository;
    // private final NotificationService notificationService;
 
 //    @Autowired
@@ -33,17 +32,17 @@ public class SOPService {
 
 
     @Autowired
-    public SOPService(SOPRepository sopRepository) {
+    public SOPInitiationService(SOPInitiationRepository sopRepository) {
         this.sopRepository = sopRepository;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public SOP initiateSOP(SOP sop) {
+    public SOPInitiation initiateSOP(SOPInitiation sop) {
         try {
             logger.info("Initiating SOP: {}", sop.getTitle());
             validateSOP(sop);
             sop.setStatus(SOPStatus.DRAFT);
-            SOP savedSOP = sopRepository.save(sop);
+            SOPInitiation savedSOP = sopRepository.save(sop);
            // notifyAuthor(savedSOP);
             return savedSOP;
         } catch (InvalidSOPException e) {
@@ -56,7 +55,7 @@ public class SOPService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public SOP saveSOP(SOP sop) {
+    public SOPInitiation saveSOP(SOPInitiation sop) {
         try {
             logger.info("Saving SOP: {}", sop.getTitle());
             return sopRepository.save(sop);
@@ -78,7 +77,7 @@ public class SOPService {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<SOP> getAllSOPs() {
+    public List<SOPInitiation> getAllSOPs() {
         try {
             logger.info("Retrieving all SOPs");
             return sopRepository.findAll();
@@ -89,7 +88,7 @@ public class SOPService {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public SOP getSOPById(String id) {
+    public SOPInitiation getSOPById(String id) {
         try {
             logger.info("Retrieving SOP with id: {}", id);
             return sopRepository.findById(id)
@@ -104,7 +103,7 @@ public class SOPService {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<SOP> getSOPsByVisibility(Visibility visibility) {
+    public List<SOPInitiation> getSOPsByVisibility(Visibility visibility) {
         try {
             logger.info("Retrieving SOPs with visibility: {}", visibility);
             return sopRepository.findByVisibility(visibility);
@@ -115,7 +114,7 @@ public class SOPService {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<SOP> getSOPsByStatus(SOPStatus status) {
+    public List<SOPInitiation> getSOPsByStatus(SOPStatus status) {
         try {
             logger.info("Retrieving SOPs with status: {}", status);
             return sopRepository.findByStatus(status);
@@ -126,7 +125,7 @@ public class SOPService {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<SOP> getSOPsByAuthor(String authorId) {
+    public List<SOPInitiation> getSOPsByAuthor(String authorId) {
         try {
             logger.info("Retrieving SOPs by author id: {}", authorId);
             return sopRepository.findByApprovalPipeline_Author_Id(authorId);
@@ -136,7 +135,7 @@ public class SOPService {
         }
     }
 
-    private void validateSOP(SOP sop) {
+    private void validateSOP(SOPInitiation sop) {
         if (sop.getTitle() == null || sop.getTitle().isEmpty()) {
             throw new InvalidSOPException("SOP title cannot be empty");
         }

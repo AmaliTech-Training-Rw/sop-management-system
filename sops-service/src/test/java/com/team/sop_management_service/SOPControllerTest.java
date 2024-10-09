@@ -3,10 +3,10 @@ package com.team.sop_management_service;
 import com.team.sop_management_service.controller.SOPController;
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
-import com.team.sop_management_service.models.SOP;
+import com.team.sop_management_service.models.SOPInitiation;
 import com.team.sop_management_service.enums.Visibility;
 import com.team.sop_management_service.enums.SOPStatus;
-import com.team.sop_management_service.service.SOPService;
+import com.team.sop_management_service.service.SOPInitiationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,17 +26,17 @@ import static org.mockito.Mockito.*;
 class SOPControllerTest {
 
     @Mock
-    private SOPService sopService;
+    private SOPInitiationService sopService;
 
     @InjectMocks
     private SOPController sopController;
 
-    private SOP sampleSOP;
+    private SOPInitiation sampleSOP;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        sampleSOP = new SOP();
+        sampleSOP = new SOPInitiation();
         sampleSOP.setSopId("1");
         sampleSOP.setTitle("Sample SOP");
         sampleSOP.setVisibility(Visibility.DEPARTMENT);
@@ -45,7 +45,7 @@ class SOPControllerTest {
 
     @Test
     void testInitiateSOP_success() throws InvalidSOPException {
-        when(sopService.initiateSOP(any(SOP.class))).thenReturn(sampleSOP);
+        when(sopService.initiateSOP(any(SOPInitiation.class))).thenReturn(sampleSOP);
 
         ResponseEntity<?> response = sopController.initiateSOP(sampleSOP);
 
@@ -55,7 +55,7 @@ class SOPControllerTest {
 
     @Test
     void testInitiateSOP_invalidSOPException() throws InvalidSOPException {
-        when(sopService.initiateSOP(any(SOP.class))).thenThrow(new InvalidSOPException("Invalid SOP"));
+        when(sopService.initiateSOP(any(SOPInitiation.class))).thenThrow(new InvalidSOPException("Invalid SOP"));
 
         ResponseEntity<?> response = sopController.initiateSOP(sampleSOP);
 
@@ -65,7 +65,7 @@ class SOPControllerTest {
 
     @Test
     void testSaveSOP_success() {
-        when(sopService.saveSOP(any(SOP.class))).thenReturn(sampleSOP);
+        when(sopService.saveSOP(any(SOPInitiation.class))).thenReturn(sampleSOP);
 
         ResponseEntity<?> response = sopController.saveSOP(sampleSOP);
 
@@ -84,7 +84,7 @@ class SOPControllerTest {
 
     @Test
     void testGetAllSOPs_success() {
-        List<SOP> sopList = new ArrayList<>();
+        List<SOPInitiation> sopList = new ArrayList<>();
         sopList.add(sampleSOP);
         when(sopService.getAllSOPs()).thenReturn(sopList);
 
@@ -115,7 +115,7 @@ class SOPControllerTest {
 
     @Test
     void testGetSOPsByVisibility_success() {
-        List<SOP> sopList = new ArrayList<>();
+        List<SOPInitiation> sopList = new ArrayList<>();
         sopList.add(sampleSOP);
         when(sopService.getSOPsByVisibility(any(Visibility.class))).thenReturn(sopList);
 
@@ -127,7 +127,7 @@ class SOPControllerTest {
 
     @Test
     void testGetSOPsByStatus_success() {
-        List<SOP> sopList = new ArrayList<>();
+        List<SOPInitiation> sopList = new ArrayList<>();
         sopList.add(sampleSOP);
         when(sopService.getSOPsByStatus(any(SOPStatus.class))).thenReturn(sopList);
 
@@ -139,7 +139,7 @@ class SOPControllerTest {
 
     @Test
     void testGetSOPsByAuthor_success() {
-        List<SOP> sopList = new ArrayList<>();
+        List<SOPInitiation> sopList = new ArrayList<>();
         sopList.add(sampleSOP);
         when(sopService.getSOPsByAuthor(anyString())).thenReturn(sopList);
 
