@@ -41,10 +41,8 @@ public class SOPInitiationService {
         try {
             logger.info("Initiating SOP: {}", sop.getTitle());
             validateSOP(sop);
-            sop.setStatus(SOPStatus.DRAFT);
-            SOPInitiation savedSOP = sopRepository.save(sop);
-           // notifyAuthor(savedSOP);
-            return savedSOP;
+            // notifyAuthor(savedSOP);
+            return sopRepository.save(sop);
         } catch (InvalidSOPException e) {
             logger.error("Failed to initiate SOP: {}", e.getMessage());
             throw e;
@@ -110,17 +108,6 @@ public class SOPInitiationService {
         } catch (Exception e) {
             logger.error("Failed to retrieve SOPs by visibility: {}", visibility, e);
             throw new RuntimeException("Failed to retrieve SOPs by visibility", e);
-        }
-    }
-
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<SOPInitiation> getSOPsByStatus(SOPStatus status) {
-        try {
-            logger.info("Retrieving SOPs with status: {}", status);
-            return sopRepository.findByStatus(status);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve SOPs by status: {}", status, e);
-            throw new RuntimeException("Failed to retrieve SOPs by status", e);
         }
     }
 

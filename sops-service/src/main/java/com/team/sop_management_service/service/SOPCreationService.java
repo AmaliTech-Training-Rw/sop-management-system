@@ -165,7 +165,7 @@ public class SOPCreationService {
     private final FileStorageService fileStorageService;
    // private final EmailNotificationService emailNotificationService;
 
-    public SOPCreation createSOP(SOPCreation sopCreation, List<MultipartFile> files, String createdBy, String sopId) throws SOPNotFoundException {
+    public SOPCreation createSOP(SOPCreation sopCreation, List<MultipartFile> files) throws SOPNotFoundException {
         logger.info("Creating new SOP: {}", sopCreation.getTitle());
         sopCreation.setCreatedAt(LocalDateTime.now());
         sopCreation.setApproved(false);
@@ -173,6 +173,8 @@ public class SOPCreationService {
         sopCreation.setStatus(SOPStatus.DRAFT);  // Initially set to draft
 
         // Attach the SOPInitiation reference
+        SOPInitiation sop = new SOPInitiation();
+        String sopId = sopCreation.getId();
         SOPInitiation sopInitiation = sopInitiationRepository.findById(sopId)
                 .orElseThrow(() -> new SOPNotFoundException("SOP Initiation not found with id: " + sopId));
         sopCreation.setSopInitiation(sopInitiation);
