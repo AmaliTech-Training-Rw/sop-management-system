@@ -1,5 +1,6 @@
 package com.team.sop_management_service.controller;
 
+import com.mongodb.MongoException;
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
 import com.team.sop_management_service.models.SOPInitiation;
@@ -32,12 +33,14 @@ public class SOPController {
         try {
             SOPInitiation initiatedSOP = sopService.initiateSOP(sop);
             return ResponseEntity.ok(initiatedSOP);
-        } catch (InvalidSOPException e) {
-            logger.error("Invalid SOP data: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (MongoException e) {
+            // Log the exception with more details
+            logger.error("MongoDB error while saving SOP: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to initiate SOP due to database error", e);
         } catch (Exception e) {
-            logger.error("Unexpected error while initiating SOP", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+            // Handle other exceptions
+            logger.error("Unexpected error while initiating SOP: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to initiate SOP", e);
         }
     }
 
@@ -96,17 +99,6 @@ public class SOPController {
         } catch (Exception e) {
             logger.error("Failed to retrieve SOPs by visibility: {}", visibility, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve SOPs by visibility");
-        }
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<?> getSOPsByStatus(@PathVariable SOPStatus status) {
-        try {
-            List<SOPInitiation> sops = sopService.getSOPsByStatus(status);
-            return ResponseEntity.ok(sops);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve SOPs by status: {}", status, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve SOPs by status");
         }
     }
 
