@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>com.team</groupId>
-	<artifactId>email-service</artifactId>
+	<artifactId>notifications-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>sops-service</name>
 	<description>Sop Management Service</description>
@@ -47,18 +47,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.icegreen</groupId>
-			<artifactId>greenmail-junit5</artifactId>
-			<version>1.6.5</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
