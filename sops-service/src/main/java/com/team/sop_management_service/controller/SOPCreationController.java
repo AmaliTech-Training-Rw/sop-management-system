@@ -108,7 +108,9 @@ import com.team.sop_management_service.error.SOPNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,14 +128,19 @@ public class SOPCreationController {
     @PostMapping("/create")
     @Operation(summary = "Create a new SOP",
             description = "Create a new SOP document. Attach files and link it to an existing SOP Initiation.")
-    public ResponseEntity<SOPCreation> createSOP(
-            @RequestPart("sopCreation") SOPCreation sopCreation,
-            @RequestPart("files") List<MultipartFile> files
-          ) throws SOPNotFoundException {
+    public ResponseEntity<SOPCreation> createSOP(@Valid @RequestBody SOPCreation sopCreation)
+            throws SOPNotFoundException {
 
-        SOPCreation createdSOP = sopCreationService.createSOP(sopCreation, files);
-        return ResponseEntity.ok(createdSOP);
+        // Log incoming SOPCreation for debugging
+        System.out.println("Received SOPCreation request: " + sopCreation);
+
+        // Call the service to create the SOP
+        SOPCreation createdSOP = sopCreationService.createSOP(sopCreation);
+
+        // Return the created SOP with HTTP status 201 Created
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSOP);
     }
+
 
     @PutMapping("/submit/{id}")
     @Operation(summary = "Submit SOP for Review",
