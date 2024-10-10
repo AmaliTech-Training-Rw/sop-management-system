@@ -102,11 +102,13 @@
 
 package com.team.sop_management_service.controller;
 
+import com.team.sop_management_service.dto.SOPCreationDTO;
 import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.service.SOPCreationService;
 import com.team.sop_management_service.error.SOPNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -199,4 +201,28 @@ public class SOPCreationController {
         SOPCreation cachedSOP = sopCreationService.getCachedSOPById(id);
         return ResponseEntity.ok(cachedSOP);
     }
+//
+//    @GetMapping("/{sopReferenceId}/current")
+//    @Operation(summary = "Get current version of an SOP", description = "Retrieves the current version of a Standard Operating Procedure")
+//    @ApiResponse(responseCode = "200", description = "Current version retrieved successfully")
+//    public ResponseEntity<SOPCreationDTO> getCurrentVersion(@PathVariable String sopReferenceId) {
+//        SOPCreationDTO currentVersion = sopCreationService.getCurrentVersion(sopReferenceId);
+//        return ResponseEntity.ok(currentVersion);
+//    }
+//
+//    @GetMapping("/{sopReferenceId}/versions")
+//    @Operation(summary = "Get all versions of an SOP", description = "Retrieves all versions of a Standard Operating Procedure")
+//    @ApiResponse(responseCode = "200", description = "All versions retrieved successfully")
+//    public ResponseEntity<List<SOPCreationDTO>> getAllVersions(@PathVariable String sopReferenceId) {
+//        List<SOPCreationDTO> versions = sopCreationService.getAllVersions(sopReferenceId);
+//        return ResponseEntity.ok(versions);
+//    }
+//
+//    @PostMapping("/{sopReferenceId}/revert/{version}")
+//    @Operation(summary = "Revert to a specific version", description = "Reverts a Standard Operating Procedure to a specific version")
+//    @ApiResponse(responseCode = "200", description = "SOP reverted successfully")
+//    public ResponseEntity<SOPCreationDTO> revertToVersion(@PathVariable String sopReferenceId, @PathVariable int version) {
+//        SOPCreationDTO revertedSOP = sopCreationService.revertToVersion(sopReferenceId, version);
+//        return ResponseEntity.ok(revertedSOP);
+//    }
 }

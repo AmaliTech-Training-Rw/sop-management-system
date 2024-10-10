@@ -1,141 +1,3 @@
-//package com.team.sop_management_service.service;
-//
-//import com.team.sop_management_service.error.SOPNotFoundException;
-//import com.team.sop_management_service.models.SOPCreation;
-//import com.team.sop_management_service.repository.SOPCreationRepository;
-//import lombok.RequiredArgsConstructor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.multipart.MultipartFile;
-//import java.io.IOException;
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Optional;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class SOPCreationService {
-//    private static final Logger logger = LoggerFactory.getLogger(SOPCreationService.class);
-//    private final SOPCreationRepository sopCreationRepository;
-//    private final FileStorageService fileStorageService;
-//
-//    /**
-//     * Creates a new SOP with associated files.
-//     *
-//     * @param sopCreation The SOP to be created
-//     * @param files The list of files to be associated with the SOP
-//     * @return The created SOP
-//     * @throws RuntimeException if there's an error storing the files
-//     */
-//    public SOPCreation createSOP(SOPCreation sopCreation, List<MultipartFile> files) throws RuntimeException {
-//        logger.info("Creating new SOP: {}", sopCreation.getTitle());
-//        sopCreation.setCreated_at(LocalDateTime.now());
-//        sopCreation.setApproved(false);
-//        sopCreation.setVersion(1);
-//
-//        if (files != null && !files.isEmpty()) {
-//            List<String> fileNames = new ArrayList<>();
-//            for (MultipartFile file : files) {
-//                try {
-//                    String fileName = fileStorageService.storeFile(file);
-//                    fileNames.add(fileName);
-//                } catch (IOException e) {
-//                    logger.error("Failed to store file: {}", file.getOriginalFilename(), e);
-//                    throw new RuntimeException("Could not store file " + file.getOriginalFilename(), e);
-//                }
-//            }
-//            sopCreation.setFiles(fileNames);
-//        }
-//
-//        SOPCreation savedSOP = sopCreationRepository.save(sopCreation);
-//        logger.info("SOP created successfully with ID: {}", savedSOP.getId());
-//        return savedSOP;
-//    }
-//
-//    /**
-//     * Retrieves an SOP by its ID.
-//     *
-//     * @param id The ID of the SOP
-//     * @return The SOP if found
-//     * @throws SOPNotFoundException if the SOP is not found
-//     */
-//    public SOPCreation getSOPById(String id) throws SOPNotFoundException {
-//        logger.debug("Fetching SOP with ID: {}", id);
-//        return sopCreationRepository.findById(id)
-//                .orElseThrow(() -> {
-//                    logger.warn("SOP not found with ID: {}", id);
-//                    return new SOPNotFoundException("SOP not found with id: " + id);
-//                });
-//    }
-//
-//    /**
-//     * Retrieves all SOPs.
-//     *
-//     * @return List of all SOPs
-//     */
-//    public List<SOPCreation> getAllSOPs() {
-//        logger.debug("Fetching all SOPs");
-//        return sopCreationRepository.findAll();
-//    }
-//
-//    /**
-//     * Updates an existing SOP.
-//     *
-//     * @param id The ID of the SOP to update
-//     * @param sopCreation The updated SOP data
-//     * @return The updated SOP
-//     * @throws SOPNotFoundException if the SOP is not found
-//     */
-//    public SOPCreation updateSOP(String id, SOPCreation sopCreation) throws SOPNotFoundException {
-//        logger.info("Updating SOP with ID: {}", id);
-//        SOPCreation existingSOP = getSOPById(id);
-//        existingSOP.setTitle(sopCreation.getTitle());
-//        existingSOP.setDescription(sopCreation.getDescription());
-//        existingSOP.setContent(sopCreation.getContent());
-//        existingSOP.setVersion(existingSOP.getVersion() + 1);
-//        existingSOP.setUpdated_at(LocalDateTime.now());
-//
-//        SOPCreation updatedSOP = sopCreationRepository.save(existingSOP);
-//        logger.info("SOP updated successfully with ID: {}", updatedSOP.getId());
-//        return updatedSOP;
-//    }
-//
-//    /**
-//     * Deletes an SOP.
-//     *
-//     * @param id The ID of the SOP to delete
-//     * @throws SOPNotFoundException if the SOP is not found
-//     */
-//    public void deleteSOP(String id) throws SOPNotFoundException {
-//        logger.info("Deleting SOP with ID: {}", id);
-//        if (!sopCreationRepository.existsById(id)) {
-//            logger.warn("Attempted to delete non-existent SOP with ID: {}", id);
-//            throw new SOPNotFoundException("SOP not found with id: " + id);
-//        }
-//        sopCreationRepository.deleteById(id);
-//        logger.info("SOP deleted successfully with ID: {}", id);
-//    }
-//
-//    /**
-//     * Retrieves an SOP by its reference ID.
-//     *
-//     * @param sopReferenceId The reference ID of the SOP
-//     * @return The SOP if found
-//     * @throws SOPNotFoundException if the SOP is not found
-//     */
-//    public SOPCreation getSOPByReferenceId(String sopReferenceId) throws SOPNotFoundException {
-//        logger.debug("Fetching SOP with reference ID: {}", sopReferenceId);
-//        return sopCreationRepository.findBySopReferenceId(sopReferenceId)
-//                .orElseThrow(() -> {
-//                    logger.warn("SOP not found with reference ID: {}", sopReferenceId);
-//                    return new SOPNotFoundException("SOP not found with reference id: " + sopReferenceId);
-//                });
-//    }
-//}
-
-
 package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.enums.SOPStatus;
@@ -229,3 +91,149 @@ public class SOPCreationService {
         sopCreationRepository.deleteById(id);
     }
 }
+
+
+
+
+
+
+
+
+
+
+//// Service
+//package com.team.sop_management_service.service;
+//import com.team.sop_management_service.dto.SOPCreationDTO;
+//import com.team.sop_management_service.error.SOPNotFoundException;
+//import com.team.sop_management_service.repository.SOPCreationRepository;
+//import lombok.RequiredArgsConstructor;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.stereotype.Service;
+//import org.springframework.transaction.annotation.Transactional;
+//
+//import java.time.LocalDateTime;
+//import java.util.List;
+//import java.util.UUID;
+//import java.util.stream.Collectors;
+//
+//@Service
+//@RequiredArgsConstructor
+//public class SOPCreationService {
+//    private static final Logger logger = LoggerFactory.getLogger(SOPService.class);
+//    private final SOPCreationRepository sopRepository;
+//
+//    @Transactional
+//    public SOPCreationDTO createSOP(SOPCreationDTO SOPCreationDTO) {
+//        logger.info("Creating new SOP: {}", SOPCreationDTO.getTitle());
+//        try {
+//            SOPCreationDTO sop = convertToEntity(SOPCreationDTO);
+//            sop.setSopReferenceId(UUID.randomUUID().toString());
+//            sop.setVersion(1);
+//            sop.setCreatedBy(String.valueOf(LocalDateTime.now()));
+//           // sop.setIsCurrentVersion(true);
+//          SOPCreationDTO savedSOP = sopRepository.save(sop);
+//            logger.info("SOP created successfully with ID: {}", savedSOP.getId());
+//            return convertToDTO(savedSOP);
+//        } catch (Exception e) {
+//            logger.error("Error creating SOP: {}", e.getMessage());
+//            throw new RuntimeException("Failed to create SOP", e);
+//        }
+//    }
+//
+//    @Transactional
+//    public SOPCreationDTO updateSOP(String sopReferenceId, SOPCreationDTO updatedSOPCreationDTO) {
+//        logger.info("Updating SOP with reference ID: {}", sopReferenceId);
+//        try {
+//            SOPCreationDTO currentVersion = getCurrentVersion(sopReferenceId);
+//            //currentVersion.setIsCurrentVersion(false);
+//            sopRepository.save(currentVersion);
+//
+//            SOP updatedSOP = convertToEntity(updatedSOPCreationDTO);
+//            updatedSOP.setId(null);
+//            updatedSOP.setSopReferenceId(sopReferenceId);
+//            updatedSOP.setVersion(currentVersion.getVersion() + 1);
+//            updatedSOP.setCreatedAt(LocalDateTime.parse(currentVersion.getCreatedBy()));
+//            updatedSOP.setUpdatedAt(LocalDateTime.now());
+//            updatedSOP.setIsCurrentVersion(true);
+//
+//            SOPCreationDTO savedSOP = sopRepository.save(updatedSOP);
+//            logger.info("SOP updated successfully. New version: {}", savedSOP.getVersion());
+//            return convertToDTO(savedSOP);
+//        } catch (SOPNotFoundException e) {
+//            logger.error("SOP not found with reference ID: {}", sopReferenceId);
+//            throw e;
+//        } catch (Exception e) {
+//            logger.error("Error updating SOP: {}", e.getMessage());
+//            throw new RuntimeException("Failed to update SOP", e);
+//        }
+//    }
+//
+//    public SOPCreationDTO getCurrentVersion(String sopReferenceId) {
+//        logger.info("Fetching current version of SOP with reference ID: {}", sopReferenceId);
+//        SOPCreationDTO currentVersion = sopRepository.findBySopReferenceIdAndIsCurrentVersionTrue(sopReferenceId)
+//                .orElseThrow(() -> {
+//                    logger.error("Current version of SOP not found with reference ID: {}", sopReferenceId);
+//                    return new SOPNotFoundException("Current version of SOP not found with reference ID: " + sopReferenceId);
+//                });
+//        return convertToDTO(currentVersion);
+//    }
+//
+//    public List<SOPCreationDTO> getAllVersions(String sopReferenceId) {
+//        logger.info("Fetching all versions of SOP with reference ID: {}", sopReferenceId);
+//        List<SOPCreationDTO> versions = sopRepository.findBySopReferenceIdOrderByVersionDesc(sopReferenceId);
+//        if (versions.isEmpty()) {
+//            logger.warn("No versions found for SOP with reference ID: {}", sopReferenceId);
+//        }
+//        return versions.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+//
+//    @Transactional
+//    public SOPCreationDTO revertToVersion(String sopReferenceId, int version) {
+//        logger.info("Reverting SOP with reference ID: {} to version: {}", sopReferenceId, version);
+//        try {
+//            SOPCreationDTO versionToRevert = getSpecificVersion(sopReferenceId, version);
+//            return updateSOP(sopReferenceId, convertToDTO(versionToRevert));
+//        } catch (SOPNotFoundException e) {
+//            logger.error("SOP or version not found: {}", e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            logger.error("Error reverting SOP: {}", e.getMessage());
+//            throw new RuntimeException("Failed to revert SOP", e);
+//        }
+//    }
+//
+//    private SOPCreationDTO getSpecificVersion(String sopReferenceId, int version) {
+//        return sopRepository.findBySopReferenceIdAndVersion(sopReferenceId, version)
+//                .orElseThrow(() -> new SOPNotFoundException("Version " + version + " not found for SOP with reference ID: " + sopReferenceId));
+//    }
+//
+//    private SOPCreationDTO convertToDTO(SOPCreationDTO sop) {
+//        SOPCreationDTO dto = new SOPCreationDTO();
+//        dto.setId(sop.getId());
+//        dto.setTitle(sop.getTitle());
+//        dto.setDescription(sop.getDescription());
+//        dto.setContent(sop.getContent());
+//        dto.setVersion(sop.getVersion());
+//        dto.setCategory(sop.getCategory());
+//        dto.setSubCategory(sop.getSubCategory());
+//        dto.setStatus(sop.getStatus());
+//        dto.setSopReferenceId(sop.getSopReferenceId());
+//        dto.setCreatedBy(sop.getCreatedBy());
+//        dto.setUpdatedBy(sop.getUpdatedBy());
+//        return dto;
+//    }
+//
+//    private SOPCreationDTO convertToEntity(SOPCreationDTO dto) {
+//        SOPCreationDTO sop = new SOPCreationDTO();
+//        sop.setTitle(dto.getTitle());
+//        sop.setDescription(dto.getDescription());
+//        sop.setContent(dto.getContent());
+//        sop.setCategory(dto.getCategory());
+//        sop.setSubCategory(dto.getSubCategory());
+//        sop.setStatus(dto.getStatus());
+//        sop.setCreatedBy(dto.getCreatedBy());
+//        sop.setUpdatedBy(dto.getUpdatedBy());
+//        return sop;
+//    }
+//}
