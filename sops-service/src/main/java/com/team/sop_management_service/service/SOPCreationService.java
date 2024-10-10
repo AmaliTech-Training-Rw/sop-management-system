@@ -165,34 +165,19 @@ public class SOPCreationService {
     private final FileStorageService fileStorageService;
    // private final EmailNotificationService emailNotificationService;
 
-    public SOPCreation createSOP(SOPCreation sopCreation, List<MultipartFile> files) throws SOPNotFoundException {
+    public SOPCreation createSOP(SOPCreation sopCreation) throws SOPNotFoundException {
         logger.info("Creating new SOP: {}", sopCreation.getTitle());
         sopCreation.setCreatedAt(LocalDateTime.now());
         sopCreation.setApproved(false);
         sopCreation.setVersion(1);  // Set initial version
         sopCreation.setStatus(SOPStatus.DRAFT);  // Initially set to draft
 
-        // Attach the SOPInitiation reference
-        SOPInitiation sop = new SOPInitiation();
-        String sopId = sopCreation.getId();
-        SOPInitiation sopInitiation = sopInitiationRepository.findById(sopId)
-                .orElseThrow(() -> new SOPNotFoundException("SOP Initiation not found with id: " + sopId));
-        sopCreation.setSopInitiation(sopInitiation);
-
-        // Handle file uploads
-        if (files != null && !files.isEmpty()) {
-            List<String> fileNames = new ArrayList<>();
-            for (MultipartFile file : files) {
-                try {
-                    String fileName = fileStorageService.storeFile(file);
-                    fileNames.add(fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to store file: {}", file.getOriginalFilename(), e);
-                    throw new RuntimeException("Could not store file " + file.getOriginalFilename(), e);
-                }
-            }
-            sopCreation.setFiles(fileNames);  // Set file names/paths
-        }
+//        // Attach the SOPInitiation reference
+//        SOPInitiation sop = new SOPInitiation();
+//        String sopId = sopCreation.getId();
+//        SOPInitiation sopInitiation = sopInitiationRepository.findById(sopId)
+//                .orElseThrow(() -> new SOPNotFoundException("SOP Initiation not found with id: " + sopId));
+//        sopCreation.setSopInitiation(sopInitiation);
 
         SOPCreation savedSOP = sopCreationRepository.save(sopCreation);
         logger.info("SOP created successfully with ID: {}", savedSOP.getId());

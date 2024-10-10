@@ -27,8 +27,6 @@ public class SOPCreation {
     @NotBlank(message = "Content is required")
     private String content;  // Will store rich-text content as HTML
 
-    private List<String> files;  // File paths or metadata of attached files
-
     @NotNull(message = "Version is required")
     private Integer version;
 
