@@ -1,5 +1,6 @@
 package com.team.sop_management_service.service;
 
+import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
 import com.team.sop_management_service.models.SOPInitiation;
@@ -7,7 +8,6 @@ import com.team.sop_management_service.models.ApprovalPipeline;
 import com.team.sop_management_service.models.User;
 import com.team.sop_management_service.repository.SOPInitiationRepository;
 import com.team.sop_management_service.enums.Visibility;
-import com.team.sop_management_service.enums.SOPStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +22,12 @@ public class SOPInitiationService {
     private static final Logger logger = LoggerFactory.getLogger(SOPInitiationService.class);
 
     private final SOPInitiationRepository sopRepository;
-   // private final NotificationService notificationService;
-
-//    @Autowired
-//    public SOPService(SOPRepository sopRepository, NotificationService notificationService) {
-//        this.sopRepository = sopRepository;
-//        this.notificationService = notificationService;
-//    }
-
+    private final NotificationService notificationService;
 
     @Autowired
-    public SOPInitiationService(SOPInitiationRepository sopRepository) {
+    public SOPInitiationService(SOPInitiationRepository sopRepository, NotificationService notificationService) {
         this.sopRepository = sopRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -41,8 +35,10 @@ public class SOPInitiationService {
         try {
             logger.info("Initiating SOP: {}", sop.getTitle());
             validateSOP(sop);
-            // notifyAuthor(savedSOP);
-            return sopRepository.save(sop);
+            SOPInitiation savedSOP = sopRepository.save(sop);
+
+            notificationService.notifyAuthor(savedSOP);
+             return savedSOP;
         } catch (InvalidSOPException e) {
             logger.error("Failed to initiate SOP: {}", e.getMessage());
             throw e;
@@ -142,6 +138,10 @@ public class SOPInitiationService {
                 pipeline.getReviewers() == null || pipeline.getReviewers().isEmpty()) {
             throw new InvalidSOPException("Invalid approval pipeline. Author, approver, and reviewers must be defined.");
         }
+//        // Check if the author, approver, and reviewers exist in the system
+//        checkUserExists(pipeline.getAuthor());
+//        checkUserExists(pipeline.getApprover());
+//        pipeline.getReviewers().forEach(this::checkUserExists);
 
         User hod = pipeline.getApprover(); // Assume the HoD is the approver or a staff member
 
@@ -163,6 +163,17 @@ public class SOPInitiationService {
         // Notify the Author after successful validation
        // notifyAuthor(pipeline);
     }
+//    /**
+//     * Checks if the user exists in the system (e.g., by querying the database).
+//     * Throws an exception if the user doesn't exist.
+//     * @param user The user to check.
+//     */
+//    private void checkUserExists(User user) {
+//        // Assuming userService is a service that checks the user’s existence
+//        if (!userService.existsById(user.getId())) {
+//            throw new InvalidSOPException("User with ID " + user.getId() + " does not exist.");
+//        }
+//    }
 
     // Checks if both users belong to the same department
     private boolean isSameDepartment(User user1, User user2) {

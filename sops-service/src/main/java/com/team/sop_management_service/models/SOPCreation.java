@@ -47,4 +47,7 @@ public class SOPCreation {
     private SOPInitiation sopInitiation;  // Reference to SOPInitiation document
 
     private String sopReferenceId;  // Unique SOP reference ID for versioning
+
+    private Boolean isCurrentVersion;
+
 }
