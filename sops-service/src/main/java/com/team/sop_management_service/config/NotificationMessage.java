@@ -8,10 +8,9 @@ import lombok.*;
 public class NotificationMessage {
 
     private String subject;
-    private String email;
-    private String sopTitle;
-    private String messageContent;
-    private String notificationType;
+    private String recipient;
+    private String message;
+    private String type;
 
 
 }
