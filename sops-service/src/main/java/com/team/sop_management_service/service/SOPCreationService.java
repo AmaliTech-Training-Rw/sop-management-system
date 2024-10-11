@@ -403,10 +403,10 @@ public class SOPCreationService {
 //    }
 @Transactional
 public SOPCreation updateSOP(String id, SOPCreation updatedSOP) throws SOPNotFoundException {
-   // SOPCreation existingSOP = getSOPById(id);
+    SOPCreation existingSOP = getSOPById(id);
 
     // Fetch the latest version of the SOP by id
-    SOPCreation existingSOP = sopCreationRepository.findTopBySopReferenceIdOrderByVersionDesc(id);
+//   SOPCreation existingSOP = sopCreationRepository.findTopBySopReferenceIdOrderByVersionDesc(id);
 
     if (existingSOP == null) {
         throw new SOPNotFoundException("SOP with ID: " + id + " not found");
@@ -491,10 +491,29 @@ public SOPCreation updateSOP(String id, SOPCreation updatedSOP) throws SOPNotFou
         return sopCreationRepository.findBySopReferenceIdAndVersion(sopReferenceId, version)
                 .orElseThrow(() -> new SOPNotFoundException("Version " + version + " not found for SOP with reference ID: " + sopReferenceId));
     }
-    // Method to get all SOPs with pagination
+//    // Method to get all SOPs with pagination
+//    public Page<SOPCreation> getAllVersionsPaged(Pageable pageable) {
+//        // Fetch SOP records with pagination
+//        return sopCreationRepository.findAll(pageable);
+//    }'
+
+        // Method to get all SOPs with pagination
     public Page<SOPCreation> getAllVersionsPaged(Pageable pageable) {
         // Fetch SOP records with pagination
         return sopCreationRepository.findAll(pageable);
+    }
+
+    // Update the status of an SOP
+    public void updateSOPStatus(String sopId, SOPStatus newStatus) {
+        SOPCreation sop = sopCreationRepository.findById(sopId)
+                .orElseThrow(() -> new SOPNotFoundException("SOP not found"));
+
+        // Update the status and timestamp
+        sop.setStatus(newStatus);
+        sop.setUpdatedAt(LocalDateTime.now());
+
+        // Save the updated SOP
+        sopCreationRepository.save(sop);
     }
 
 //    public Page<SOPCreation> getAllVersionsPaged(Pageable pageable) {
