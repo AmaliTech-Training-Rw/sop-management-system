@@ -18,6 +18,12 @@ public class Review {
     @DBRef
     private User reviewerId;  // ID of the user who reviewed the SOP
     private boolean isConfirmed;  // Whether the review is a confirmation or return
-    private String comment;  // Any comments from the reviewer
-    private LocalDateTime reviewedAt;  // Timestamp of when the review was made
+
+    public static boolean isConfirmed() {
+        return true;
+    }
+
+    public static boolean isConfirmed(User user) {
+        return true;
+    }
 }

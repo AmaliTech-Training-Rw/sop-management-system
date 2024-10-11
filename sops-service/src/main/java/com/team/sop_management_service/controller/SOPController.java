@@ -1,12 +1,10 @@
 package com.team.sop_management_service.controller;
 
 import com.mongodb.MongoException;
-import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
 import com.team.sop_management_service.models.SOPInitiation;
 import com.team.sop_management_service.service.SOPInitiationService;
 import com.team.sop_management_service.enums.Visibility;
-import com.team.sop_management_service.enums.SOPStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

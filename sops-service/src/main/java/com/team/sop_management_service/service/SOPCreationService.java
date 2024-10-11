@@ -498,9 +498,9 @@ public SOPCreation updateSOP(String id, SOPCreation updatedSOP) throws SOPNotFou
 //    }'
 
         // Method to get all SOPs with pagination
-    public Page<SOPCreation> getAllVersionsPaged(Pageable pageable) {
+    public List<SOPCreation> getAllVersionsPaged() {
         // Fetch SOP records with pagination
-        return sopCreationRepository.findAll(pageable);
+        return sopCreationRepository.findAll();
     }
 
     // Update the status of an SOP

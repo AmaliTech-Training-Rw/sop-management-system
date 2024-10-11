@@ -19,7 +19,4 @@ public class ApprovalPipeline {
 
     @DBRef
     private User approver; // Staff assigned to approve the SOP (can be HoD)
-
-//    @DBRef
-//    private User department;
 }
