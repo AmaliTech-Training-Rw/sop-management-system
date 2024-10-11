@@ -38,6 +38,8 @@ public class SOPInitiationService {
             SOPInitiation savedSOP = sopRepository.save(sop);
 
             notificationService.notifyAuthor(savedSOP);
+            notificationService.notifyApprover(savedSOP);
+            notificationService.notifyReviewers(savedSOP);
              return savedSOP;
         } catch (InvalidSOPException e) {
             logger.error("Failed to initiate SOP: {}", e.getMessage());
