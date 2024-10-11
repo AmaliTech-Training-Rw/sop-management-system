@@ -1,6 +1,7 @@
 package com.team.authentication_service.models;
 
 import com.team.authentication_service.enums.Position;
+import com.team.authentication_service.repositories.UserRoleRepository;
 import com.team.authentication_service.utils.ArrayToStringConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public int id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
     @Column(nullable = false)
     public String name;
@@ -35,23 +35,27 @@ public class User implements UserDetails {
     public String email;
 
     @OneToOne
-    @JoinColumn(name = "id")
-    public Department departmentId;
+    @JoinColumn(name = "department_id")
+    public Department department;
 
+    @Column(nullable = false)
     public Position position;
 
-    public boolean isVerified;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    public Set<Role> roles;
 
     public String imageUrl;
 
-    @Convert(converter = ArrayToStringConverter.class)
-    public String[] roles;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(roles)
-                .map(role -> new SimpleGrantedAuthority(role))
-                .collect(Collectors.toList());
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -1,6 +1,6 @@
-package com.team.kafka_service;
+package com.team.kafka_service.controllers;
 
-import com.team.kafka_service.service.KafkaProducer;
+import com.team.kafka_service.services.KafkaProducer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

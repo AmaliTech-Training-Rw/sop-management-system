@@ -25,16 +25,19 @@ spring:
         - id: authentication-service
           uri: lb://authentication-service
           predicates:
-            - Path=/auth/**
+            - Path=/auth/login,/auth/generate-otp/**,/auth/verify-otp/**,/auth/register,/auth/validate-token/**,/departments/**,/roles/**,/user-roles/**,/auth/reset-password/**
+        - id: authentication-service-create-password
+          uri: lb://authentication-service
+          predicates:
+            - Path=/auth/create-password,/users/**
           filters:
-            - StripPrefix=1
+            - name: AuthFilter
         - id: sops_service
           uri: lb://sop-management-service
           predicates:
             - Path=/sop-management/**
           filters:
             - name: AuthFilter
-            - StripPrefix=1
         - id: email_service
           uri: lb://email-service
           predicates:

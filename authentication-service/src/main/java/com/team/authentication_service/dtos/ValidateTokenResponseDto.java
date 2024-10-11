@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ValidateTokenResponseDto {
-    private String email;
+    private AuthenticatedUserHeaders headers;
 }

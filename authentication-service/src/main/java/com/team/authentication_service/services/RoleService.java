@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RoleService {
@@ -20,7 +21,7 @@ public class RoleService {
     public void add(CreateRoleRequestDto role) throws Exception {
         try {
             roleRepository.save(
-                    Role.builder().role(role.getRoleName()).build()
+                    Role.builder().name(role.getRoleName()).build()
             );
         } catch (Exception e) {
             throw new Exception(e.getMessage());

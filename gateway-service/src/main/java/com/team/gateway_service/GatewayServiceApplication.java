@@ -27,3 +27,5 @@ public class GatewayServiceApplication {
         SpringApplication.run(GatewayServiceApplication.class, args);
     }
 }
+
+// solve the serialization issue, in kafka on the email side

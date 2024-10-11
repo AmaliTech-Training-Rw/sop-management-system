@@ -1,5 +1,7 @@
 package com.team.authentication_service.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.team.authentication_service.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,6 +26,15 @@ public class JwtUtil {
 
     @Value("${security.jwt.token.expiration}")
     private long jwtExpiration;
+
+    private final ObjectMapper objectMapper;
+
+
+    public JwtUtil() {
+        this.objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        objectMapper.registerModule(module);
+    }
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -76,7 +87,7 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
@@ -84,5 +95,4 @@ public class JwtUtil {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 }

@@ -35,15 +35,22 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 throw new RuntimeException("Invalid Authorization header");
             }
 
+            String url = exchange.getRequest().getURI().getPath();
+
+//            if (url.contains("/auth/login") || url.contains("/auth/register") || url.contains("/auth/validate-token")) {
+//                return chain.filter(exchange);
+//            }
+
             return webClientBuilder.build()
                     .get()
                     .uri("http://localhost:8084/authentication-service/auth/validate-token?token=" + parts[1])
                     .retrieve()
                     .bodyToMono(ValidateTokenResponseDto.class)
                     .map(res -> {
+                        System.out.println(res);
                         exchange.getRequest()
                                 .mutate()
-                                .header("x-auth-user-id", String.valueOf(res.getEmail()));
+                                .header("x-auth-user-email", String.valueOf(res.getEmail()));
                         return exchange;
                     }).flatMap(chain::filter);
         };
