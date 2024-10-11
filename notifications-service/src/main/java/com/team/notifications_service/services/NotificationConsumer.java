@@ -44,5 +44,14 @@ public class NotificationConsumer {
             logger.info("Error processing event: {}" , e.getMessage());
         }
     }
+
+    //Method to view notification
+    public NotificationModel markViewedNotification(String notificationId) {
+        NotificationModel notification = notificationRepo.findById(notificationId).orElseThrow(() -> new RuntimeException("Notification not found"));
+        notification.setRead(true);
+        notificationRepo.save(notification);
+        return notification;
+    }
+
 }
 
