@@ -1,7 +1,5 @@
 package com.team.authentication_service.dtos;
 
-import com.team.authentication_service.enums.Position;
-import com.team.authentication_service.models.Department;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

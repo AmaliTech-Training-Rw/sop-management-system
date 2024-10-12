@@ -1,5 +1,6 @@
 package com.team.authentication_service.controllers;
 
+import com.team.authentication_service.dtos.UserDto;
 import com.team.authentication_service.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUser(@PathVariable int id) {
         try {
-            return ResponseEntity.ok(userService.getUserById(id));
+            UserDto userDto = userService.getUserById(id);
+            System.out.println("############## getting user dto  ##########");
+            System.out.println(userDto);
+            System.out.println("############## getting user dto  ##########");
+            return ResponseEntity.ok(userDto);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

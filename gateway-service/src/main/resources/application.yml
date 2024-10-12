@@ -25,11 +25,11 @@ spring:
         - id: authentication-service
           uri: lb://authentication-service
           predicates:
-            - Path=/auth/login,/auth/generate-otp/**,/auth/verify-otp/**,/auth/register,/auth/validate-token/**,/departments/**,/roles/**,/user-roles/**,/auth/reset-password/**
+            - Path=/auth/login,/auth/generate-otp/**,/auth/verify-otp/**,/auth/register,/auth/validate-token/**,/departments/**,/roles/**,/user-roles/**,/auth/reset-password/**,/users/**
         - id: authentication-service-create-password
           uri: lb://authentication-service
           predicates:
-            - Path=/auth/create-password,/users/**
+            - Path=/auth/create-password
           filters:
             - name: AuthFilter
         - id: sops_service
