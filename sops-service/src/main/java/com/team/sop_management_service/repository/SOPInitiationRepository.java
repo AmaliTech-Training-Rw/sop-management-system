@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface SOPInitiationRepository extends MongoRepository<SOPInitiation, String> {
     List<SOPInitiation> findByVisibility(Visibility visibility);
-    List<SOPInitiation> findByApprovalPipeline_Author_Id(String authorId);
+    List<SOPInitiation> findByApprovalPipeline_Author_Id(int authorId);
 }

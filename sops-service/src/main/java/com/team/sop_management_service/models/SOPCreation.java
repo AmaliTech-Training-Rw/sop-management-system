@@ -1,5 +1,6 @@
 package com.team.sop_management_service.models;
 
+import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.enums.SOPStatus;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
@@ -30,13 +31,13 @@ public class SOPCreation {
     @NotNull(message = "Version is required")
     private Integer version;
 
-    private String category;  // Category of the SOP
-    private String subCategory;  // Sub-category of the SOP
+    private String category;
+    private String subCategory;
 
     @NotNull(message = "Status is required")
     private SOPStatus status;  // Enum to track draft, submitted, approved, etc.
 
-    private List<User> reviews;
+    private List<UserDto> reviews;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
