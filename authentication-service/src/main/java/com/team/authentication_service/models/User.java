@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     public String email;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "department_id")
     public Department department;
 
