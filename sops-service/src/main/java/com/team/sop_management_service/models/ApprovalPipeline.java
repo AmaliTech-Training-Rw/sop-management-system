@@ -11,12 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ApprovalPipeline {
 
-    @DBRef
-    private User author; // Staff assigned to create the SOP
+    private int author; // Staff assigned to create the SOP
 
-    @DBRef
-    private List<User> reviewers; // Staff assigned to review the SOP
+    private List<Integer> reviewers; // Staff assigned to review the SOP
 
-    @DBRef
-    private User approver; // Staff assigned to approve the SOP (can be HoD)
+    private int approver; // Staff assigned to approve the SOP (can be HoD)
 }

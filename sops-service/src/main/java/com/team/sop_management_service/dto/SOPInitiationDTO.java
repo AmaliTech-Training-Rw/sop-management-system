@@ -1,41 +1,27 @@
 package com.team.sop_management_service.dto;
 
+import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.enums.Visibility;
+import com.team.sop_management_service.models.ApprovalPipeline;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SOPInitiationDTO {
+
+    private String sopId;
+
     @NotBlank(message = "SOP title is mandatory")
     private String title;
 
-    @NotNull(message = "Visibility is mandatory")
     private Visibility visibility;
 
-    @NotNull(message = "Approval pipeline is mandatory")
-    private ApprovalPipelineDTO approvalPipeline;
+    private ApprovalPipeline approvalPipeline; // List of user IDs or names in the approval pipeline
 
-    @Data
-    public static class ApprovalPipelineDTO {
-        @NotNull(message = "Author is mandatory")
-        private UserDTO author;
-
-        @NotNull(message = "Approver is mandatory")
-        private UserDTO approver;
-
-        @NotNull(message = "At least one reviewer is required")
-        private List<UserDTO> reviewers;
-    }
-
-    @Data
-    public static class UserDTO {
-        @NotBlank(message = "User ID is mandatory")
-        private String id;
-
-        @NotBlank(message = "Department is mandatory")
-        private String department;
+    public SOPInitiationDTO(String sopId, @NotBlank(message = "SOP title is mandatory") String title, Visibility visibility) {
     }
 }
