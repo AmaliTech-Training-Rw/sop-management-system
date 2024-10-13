@@ -15,7 +15,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "sop_documents")
+@Builder(toBuilder = true)
+@Document(collection = "sop_created_documents")
 public class SOPCreation {
     @Id
     private String id;
