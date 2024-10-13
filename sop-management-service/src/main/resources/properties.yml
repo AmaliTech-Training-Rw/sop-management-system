@@ -1,0 +1,11 @@
+#openapi:
+#  service:
+#    title: sop-management-service doc
+#    version: 1.0.0
+#    url: http://localhost:8084
+#
+#springdoc:
+#  api-docs:
+#    path: /sop-management-service/v3/api-docs
+#  swagger-ui:
+#    path: /sop-management-service/swagger-ui.html
