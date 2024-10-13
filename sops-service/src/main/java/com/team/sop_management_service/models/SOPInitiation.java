@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "sop_initiation")
+@Builder
+@Document(collection = "sop_initiation_documents")
 public class SOPInitiation {
 
     @Id

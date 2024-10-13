@@ -1,4 +1,4 @@
-package com.team.sop_management_service.service;
+package com.team.sop_management_service.dto;
 
 import com.team.sop_management_service.models.ApprovalPipeline;
 

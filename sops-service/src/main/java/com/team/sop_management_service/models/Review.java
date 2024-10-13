@@ -15,15 +15,14 @@ public class Review {
     @Id
     private String id;
 
-    @DBRef
-    private User reviewerId;  // ID of the user who reviewed the SOP
+    private int reviewerId;  // ID of the user who reviewed the SOP
     private boolean isConfirmed;  // Whether the review is a confirmation or return
 
     public static boolean isConfirmed() {
         return true;
     }
 
-    public static boolean isConfirmed(User user) {
+    public static boolean isConfirmed(int user) {
         return true;
     }
 }
