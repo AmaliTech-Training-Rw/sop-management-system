@@ -2,6 +2,7 @@ package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.authenticationService.AuthenticationServiceClient;
 import com.team.sop_management_service.authenticationService.UserDto;
+import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.dto.SOPInitiationDTO;
 import com.team.sop_management_service.error.InvalidSOPException;
 import com.team.sop_management_service.error.SOPNotFoundException;
@@ -27,12 +28,15 @@ public class SOPInitiationService {
 
     private final SOPInitiationRepository sopRepository;
     private final AuthenticationServiceClient authenticationServiceClient;
+    private final NotificationService notificationService;
 
     @Autowired
-    public SOPInitiationService(SOPInitiationRepository sopRepository, AuthenticationServiceClient authenticationServiceClient) {
+    public SOPInitiationService(SOPInitiationRepository sopRepository, AuthenticationServiceClient authenticationServiceClient, NotificationService notificationService) {
         this.sopRepository = sopRepository;
         this.authenticationServiceClient = authenticationServiceClient;
+        this.notificationService = notificationService;
     }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public SOPInitiationDTO initiateSOP(SOPInitiationDTO sopDTO) {
@@ -52,6 +56,8 @@ public class SOPInitiationService {
                     .build();
 
             SOPInitiation savedSOP = sopRepository.save(sopEntity);
+            notificationService.notifyAuthor(savedSOP);
+
 
             return SOPInitiationDTO.builder()
                     .sopId(savedSOP.getSopId())
@@ -104,50 +110,6 @@ public class SOPInitiationService {
             throw new RuntimeException("Failed to fetch SOPs by visibility", e);
         }
     }
-
-//    private void validateUser(int userId, String expectedRole) {
-//        try {
-//            // Fetch user by ID from authentication service
-//            ResponseEntity<UserDto> response = authenticationServiceClient.getUserById(userId);
-//
-//            if (response.getStatusCode().is2xxSuccessful()) {
-//                UserDto user = response.getBody();
-//
-//                if (user == null) {
-//                    throw new InvalidSOPException("User with ID " + userId + " could not be retrieved (user data is null).");
-//                }
-//
-//                // Ensure user roles are not null and not empty
-//                List<String> userRoles = user.getRoles();
-//                if (userRoles == null || userRoles.isEmpty()) {
-//                    throw new InvalidSOPException("User with ID " + userId + " has no roles assigned.");
-//                }
-//
-//                // Log the roles retrieved for debugging purposes
-//                logger.debug("Retrieved roles for user ID {}: {}", userId, userRoles);
-//
-//                // Check if the expected role is present in the user's roles
-//                if (userRoles.contains(expectedRole)) {
-//                    logger.info("User with ID {} is valid and has the correct role: {}", userId, expectedRole);
-//                } else {
-//                    throw new InvalidSOPException("User with ID " + userId + " does not have the correct role. Expected: "
-//                            + expectedRole + ", Actual: " + userRoles);
-//                }
-//
-//            } else {
-//                // Handle non-success status codes appropriately
-//                throw new InvalidSOPException("Failed to retrieve user with ID " + userId + ". Response status: " + response.getStatusCode());
-//            }
-//        } catch (FeignException.NotFound e) {
-//            throw new InvalidSOPException("User with ID " + userId + " does not exist.");
-//        } catch (FeignException e) {
-//            logger.error("Feign client error occurred while validating user with ID {}: {}", userId, e.getMessage());
-//            throw new RuntimeException("Error validating user with ID " + userId, e);
-//        } catch (Exception e) {
-//            logger.error("Unexpected error while validating user with ID {}: {}", userId, e.getMessage());
-//            throw new RuntimeException("Unexpected error while validating user with ID " + userId, e);
-//        }
-//    }
 
     // Method to validate a user based on their ID and role
     private void validateUser(int userId, String role) {
