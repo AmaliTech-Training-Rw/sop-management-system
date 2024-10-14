@@ -30,20 +30,4 @@ public class ReviewController {
         SOPCreation reviewedSOP = reviewService.reviewSOP(sopId, reviewerId, isConfirmed, comment);
         return ResponseEntity.ok(reviewedSOP);
     }
-
-//    // You can add more endpoints here as needed, for example:
-//
-//    @GetMapping("/{sopId}")
-//    public ResponseEntity<List<Review>> getReviewsForSOP(@PathVariable String sopId) {
-//        // Implement this method in your ReviewService
-//        List<Review> reviews = reviewService.getReviewsForSOP(sopId);
-//        return ResponseEntity.ok(reviews);
-//    }
-//
-//    @GetMapping("/reviewer/{reviewerId}")
-//    public ResponseEntity<List<SOPCreation>> getSOPsForReviewer(@PathVariable int reviewerId) {
-//        // Implement this method in your ReviewService
-//        List<SOPCreation> sops = reviewService.getSOPsForReviewer(reviewerId);
-//        return ResponseEntity.ok(sops);
-//    }
 }

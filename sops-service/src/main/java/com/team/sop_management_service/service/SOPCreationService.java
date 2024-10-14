@@ -2,6 +2,7 @@ package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.authenticationService.AuthenticationServiceClient;
 import com.team.sop_management_service.authenticationService.UserDto;
+import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.dto.SOPCreationDTO;
 import com.team.sop_management_service.enums.SOPStatus;
 import com.team.sop_management_service.error.SOPNotFoundException;
@@ -30,6 +31,7 @@ public class SOPCreationService {
     private final SOPCreationRepository sopCreationRepository;
     private final AuthenticationServiceClient authenticationServiceClient;
     private final SOPInitiationService sopInitiationService;
+    private final NotificationService notificationService;
 
     public SOPCreation createSOP(SOPCreationDTO sopCreationDTO) {
         logger.info("Creating new SOP: {}", sopCreationDTO.getTitle());
@@ -70,6 +72,7 @@ public class SOPCreationService {
                 .build();
 
         sopCreationRepository.save(sopCreation);
+        notificationService.notifyAuthorOfReviewerComment(sopCreation);
         logger.info("SOP submitted for review with ID: {}", id);
 
         return sopCreation;
@@ -93,130 +96,6 @@ public class SOPCreationService {
 
         return sopCreation;
     }
-//    @Transactional
-//    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
-//        SOPCreation existingSOP = getSOPById(id);
-//
-//        if (existingSOP == null) {
-//            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
-//        }
-//
-//        // First, create the new version
-//        SOPCreation newVersion = SOPCreation.builder()
-//                .title(updatedSOPDTO.getTitle())
-//                .description(updatedSOPDTO.getDescription())
-//                .content(updatedSOPDTO.getContent())
-//                .category(updatedSOPDTO.getCategory())
-//                .subCategory(updatedSOPDTO.getSubCategory())
-//                .sopReferenceId(existingSOP.getSopReferenceId())
-//                .version(existingSOP.getVersion() + 1)
-//                .status(existingSOP.getStatus()) // Carry over the status from the existing version
-//                .isCurrentVersion(true) // New version is current
-//                .createdAt(existingSOP.getCreatedAt())
-//                .updatedAt(LocalDateTime.now())
-//                .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
-//                .reviews(fetchReviewerIds(updatedSOPDTO.getReviewUserIds()))
-//                .build();
-//
-//        // Save the new version first
-//        SOPCreation savedNewVersion = sopCreationRepository.save(newVersion);
-//
-//        // Now mark the existing version as not current
-//        existingSOP = existingSOP.toBuilder()
-//                .isCurrentVersion(false)
-//                .build();
-//        sopCreationRepository.save(existingSOP);
-//
-//        return savedNewVersion;
-//    }
-//
-//    @Transactional
-//    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
-//        SOPCreation existingSOP = getSOPById(id);
-//
-//        if (existingSOP == null) {
-//            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
-//        }
-//
-//        // Increment the version number
-//        int newVersions = existingSOP.getVersion() + 1;
-//
-//        // Create the new version
-//        SOPCreation newVersion = SOPCreation.builder()
-//                .title(updatedSOPDTO.getTitle())
-//                .description(updatedSOPDTO.getDescription())
-//                .content(updatedSOPDTO.getContent())
-//                .category(updatedSOPDTO.getCategory())
-//                .subCategory(updatedSOPDTO.getSubCategory())
-//                .sopReferenceId(existingSOP.getSopReferenceId())
-//                .version(newVersions)
-//                .status(existingSOP.getStatus()) // Carry over the status from the existing version
-//                .isCurrentVersion(true) // New version is current
-//                .createdAt(LocalDateTime.now()) // Set creation time for the new version
-//                .updatedAt(LocalDateTime.now())
-//                .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
-//                .reviews(fetchReviewerIds(updatedSOPDTO.getReviewUserIds()))
-//                .build();
-//
-//        // Save the new version
-//        SOPCreation savedNewVersion = sopCreationRepository.save(newVersion);
-//
-//        // Mark the existing version as not current, but don't modify its other fields
-//        existingSOP.setIsCurrentVersion(false);
-//        sopCreationRepository.save(existingSOP);
-//
-//        return savedNewVersion;
-//    }
-
-
-//    @Transactional
-//    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
-//        SOPCreation existingSOP = getSOPById(id);
-//
-//        if (existingSOP == null) {
-//            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
-//        }
-//
-//        // Mark existing version as non-current
-//        existingSOP.setIsCurrentVersion(false);
-//        sopCreationRepository.save(existingSOP);  // Ensure this save happens before creating the new version
-//
-//        // Create a new version
-//        SOPCreation newVersion = new SOPCreation();
-//
-//        // Copy all fields from existing SOP with null checks
-//        newVersion.setTitle(updatedSOPDTO.getTitle() != null ? updatedSOPDTO.getTitle() : existingSOP.getTitle());
-//        newVersion.setDescription(updatedSOPDTO.getDescription() != null ? updatedSOPDTO.getDescription() : existingSOP.getDescription());
-//        newVersion.setContent(updatedSOPDTO.getContent() != null ? updatedSOPDTO.getContent() : existingSOP.getContent());
-//        newVersion.setCategory(updatedSOPDTO.getCategory() != null ? updatedSOPDTO.getCategory() : existingSOP.getCategory());
-//        newVersion.setSubCategory(updatedSOPDTO.getSubCategory() != null ? updatedSOPDTO.getSubCategory() : existingSOP.getSubCategory());
-//        newVersion.setStatus(existingSOP.getStatus()); // Carry over the status from the existing version
-//        newVersion.setSopReferenceId(existingSOP.getSopReferenceId());  // Use the same reference ID
-//
-//        // Handle reviews
-//        if (updatedSOPDTO.getReviewUserIds() != null) {
-//            newVersion.setReviews(fetchReviewerIds(updatedSOPDTO.getReviewUserIds()));
-//        } else {
-//            newVersion.setReviews(existingSOP.getReviews());
-//        }
-//
-//        // Handle SOP Initiation
-//        if (updatedSOPDTO.getSopInitiationId() != null) {
-//            newVersion.setSopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()));
-//        } else {
-//            newVersion.setSopInitiation(existingSOP.getSopInitiation());
-//        }
-//
-//        // Set new version specific fields
-//        newVersion.setVersion(existingSOP.getVersion() + 1);  // Increment version
-//        newVersion.setIsCurrentVersion(true);  // Mark as the current version
-//        newVersion.setCreatedAt(existingSOP.getCreatedAt());  // Maintain the original creation date
-//        newVersion.setUpdatedAt(LocalDateTime.now());  // Set the updated timestamp
-//
-//        // Save the new version
-//        return sopCreationRepository.save(newVersion);
-//    }
-
 
     @Transactional
     public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
@@ -252,57 +131,6 @@ public class SOPCreationService {
         // Save the new version of the SOP
         return sopCreationRepository.save(newVersion);
     }
-
-
-
-//
-//    @Transactional
-//    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
-//        SOPCreation existingSOP = getSOPById(id);
-//
-//        if (existingSOP == null) {
-//            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
-//        }
-//
-//        existingSOP = existingSOP.toBuilder()
-//                .isCurrentVersion(false)
-//                .build();
-//        sopCreationRepository.save(existingSOP);
-//
-//        SOPCreation newVersion = SOPCreation.builder()
-//                .title(updatedSOPDTO.getTitle())
-//                .description(updatedSOPDTO.getDescription())
-//                .content(updatedSOPDTO.getContent())
-//                .category(updatedSOPDTO.getCategory())
-//                .subCategory(updatedSOPDTO.getSubCategory())
-//                .sopReferenceId(existingSOP.getSopReferenceId())
-//                .version(existingSOP.getVersion() + 1)
-//                .isCurrentVersion(true)
-//                .createdAt(existingSOP.getCreatedAt())
-//                .updatedAt(LocalDateTime.now())
-//                .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
-//                .reviews(fetchReviewers(updatedSOPDTO.getReviewUserIds()))
-//                .build();
-//
-//        return sopCreationRepository.save(newVersion);
-//    }
-//    private List<UserDto> fetchReviewers(List<Integer> reviewUserIds) {
-//        if (reviewUserIds == null || reviewUserIds.isEmpty()) {
-//            return List.of();
-//        }
-//
-//        return reviewUserIds.stream()
-//                .map(userId -> {
-//                    ResponseEntity<UserDto> response = authenticationServiceClient.getUserById(userId);
-//
-//                    if (response.getStatusCode().is2xxSuccessful()) {
-//                        return response.getBody();
-//                    } else {
-//                        throw new RuntimeException("Failed to fetch user with ID: " + userId);
-//                    }
-//                })
-//                .collect(Collectors.toList()).reversed();
-//    }
 
     private List<Integer> fetchReviewerIds(List<Integer> reviewUserIds) {
         if (reviewUserIds == null || reviewUserIds.isEmpty()) {
@@ -384,17 +212,6 @@ public class SOPCreationService {
 
         sopCreationRepository.save(sop);
     }
-
-
-//    public void updateSOPStatus(String sopId, SOPStatus newStatus) {
-//        SOPCreation sop = sopCreationRepository.findById(sopId)
-//                .orElseThrow(() -> new SOPNotFoundException("SOP not found"));
-//
-//        sop.setStatus(newStatus);
-//        sop.setUpdatedAt(LocalDateTime.now());
-//
-//        sopCreationRepository.save(sop);
-//    }
 
     public SOPCreation getSOPById(String id) throws SOPNotFoundException {
         return sopCreationRepository.findById(id)

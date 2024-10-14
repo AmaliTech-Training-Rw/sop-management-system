@@ -88,15 +88,4 @@ public class SOPInitiationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve SOPs by visibility");
         }
     }
-//
-//    @GetMapping("/author/{authorId}")
-//    public ResponseEntity<?> getSOPsByAuthor(@PathVariable int authorId) {
-//        try {
-//            List<SOPInitiationDTO> sops = sopService.getSOPsByAuthor(authorId);
-//            return ResponseEntity.ok(sops);
-//        } catch (Exception e) {
-//            logger.error("Failed to retrieve SOPs by author id: {}", authorId, e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve SOPs by author");
-//        }
-//    }
 }
