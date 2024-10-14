@@ -236,7 +236,11 @@ public class SOPInitiationService {
     }
     public SOPInitiation getSOPById(String id) throws SOPNotFoundException {
         logger.info("Fetching SOP with ID: {}", id);
+
         try {
+            if (id == null) {
+                throw new IllegalArgumentException("SOP ID cannot be null");
+            }
             return sopRepository.findById(id)
                     .orElseThrow(() -> new SOPNotFoundException("SOP not found with id: " + id));
         } catch (SOPNotFoundException e) {
