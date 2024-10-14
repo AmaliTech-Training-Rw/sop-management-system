@@ -104,11 +104,6 @@ public class NotificationService {
         // Add author ID
         userIds.add(sop.getSopInitiation().getApprovalPipeline().getAuthor());
 
-//        // Add reviewer IDs
-//        userIds.addAll(sop.getSopInitiation().getApprovalPipeline().getReviewers().stream()
-//                .map(UserDto::getId)
-//                .collect(Collectors.toList()));
-
         // Add approver ID
         userIds.add(sop.getSopInitiation().getApprovalPipeline().getApprover());
 
