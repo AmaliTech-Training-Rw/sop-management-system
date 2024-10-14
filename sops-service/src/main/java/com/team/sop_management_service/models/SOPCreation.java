@@ -38,7 +38,7 @@ public class SOPCreation {
     @NotNull(message = "Status is required")
     private SOPStatus status;  // Enum to track draft, submitted, approved, etc.
 
-    private List<UserDto> reviews;
+    private List<Integer> reviews;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

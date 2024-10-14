@@ -47,7 +47,7 @@ public class SOPCreationService {
                 .isCurrentVersion(true)
                 .sopReferenceId(sopCreationDTO.getSopReferenceId() != null ? sopCreationDTO.getSopReferenceId() : UUID.randomUUID().toString())
                 .sopInitiation(sopInitiationService.getSOPById(sopCreationDTO.getSopInitiationId()))
-                .reviews(fetchReviewers(sopCreationDTO.getReviewUserIds()))
+                .reviews(fetchReviewerIds(sopCreationDTO.getReviewUserIds()))
                 .build();
 
         SOPCreation savedSOP = sopCreationRepository.save(sopCreation);
@@ -94,38 +94,86 @@ public class SOPCreationService {
         return sopCreation;
     }
 
+//
+//    @Transactional
+//    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
+//        SOPCreation existingSOP = getSOPById(id);
+//
+//        if (existingSOP == null) {
+//            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
+//        }
+//
+//        existingSOP = existingSOP.toBuilder()
+//                .isCurrentVersion(false)
+//                .build();
+//        sopCreationRepository.save(existingSOP);
+//
+//        SOPCreation newVersion = SOPCreation.builder()
+//                .title(updatedSOPDTO.getTitle())
+//                .description(updatedSOPDTO.getDescription())
+//                .content(updatedSOPDTO.getContent())
+//                .category(updatedSOPDTO.getCategory())
+//                .subCategory(updatedSOPDTO.getSubCategory())
+//                .sopReferenceId(existingSOP.getSopReferenceId())
+//                .version(existingSOP.getVersion() + 1)
+//                .isCurrentVersion(true)
+//                .createdAt(existingSOP.getCreatedAt())
+//                .updatedAt(LocalDateTime.now())
+//                .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
+//                .reviews(fetchReviewers(updatedSOPDTO.getReviewUserIds()))
+//                .build();
+//
+//        return sopCreationRepository.save(newVersion);
+//    }
+//    private List<UserDto> fetchReviewers(List<Integer> reviewUserIds) {
+//        if (reviewUserIds == null || reviewUserIds.isEmpty()) {
+//            return List.of();
+//        }
+//
+//        return reviewUserIds.stream()
+//                .map(userId -> {
+//                    ResponseEntity<UserDto> response = authenticationServiceClient.getUserById(userId);
+//
+//                    if (response.getStatusCode().is2xxSuccessful()) {
+//                        return response.getBody();
+//                    } else {
+//                        throw new RuntimeException("Failed to fetch user with ID: " + userId);
+//                    }
+//                })
+//                .collect(Collectors.toList()).reversed();
+//    }
+@Transactional
+public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
+    SOPCreation existingSOP = getSOPById(id);
 
-    @Transactional
-    public SOPCreation updateSOP(String id, SOPCreationDTO updatedSOPDTO) throws SOPNotFoundException {
-        SOPCreation existingSOP = getSOPById(id);
-
-        if (existingSOP == null) {
-            throw new SOPNotFoundException("SOP with ID: " + id + " not found");
-        }
-
-        existingSOP = existingSOP.toBuilder()
-                .isCurrentVersion(false)
-                .build();
-        sopCreationRepository.save(existingSOP);
-
-        SOPCreation newVersion = SOPCreation.builder()
-                .title(updatedSOPDTO.getTitle())
-                .description(updatedSOPDTO.getDescription())
-                .content(updatedSOPDTO.getContent())
-                .category(updatedSOPDTO.getCategory())
-                .subCategory(updatedSOPDTO.getSubCategory())
-                .sopReferenceId(existingSOP.getSopReferenceId())
-                .version(existingSOP.getVersion() + 1)
-                .isCurrentVersion(true)
-                .createdAt(existingSOP.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
-                .reviews(fetchReviewers(updatedSOPDTO.getReviewUserIds()))
-                .build();
-
-        return sopCreationRepository.save(newVersion);
+    if (existingSOP == null) {
+        throw new SOPNotFoundException("SOP with ID: " + id + " not found");
     }
-    private List<UserDto> fetchReviewers(List<Integer> reviewUserIds) {
+
+    existingSOP = existingSOP.toBuilder()
+            .isCurrentVersion(false)
+            .build();
+    sopCreationRepository.save(existingSOP);
+
+    SOPCreation newVersion = SOPCreation.builder()
+            .title(updatedSOPDTO.getTitle())
+            .description(updatedSOPDTO.getDescription())
+            .content(updatedSOPDTO.getContent())
+            .category(updatedSOPDTO.getCategory())
+            .subCategory(updatedSOPDTO.getSubCategory())
+            .sopReferenceId(existingSOP.getSopReferenceId())
+            .version(existingSOP.getVersion() + 1)
+            .isCurrentVersion(true)
+            .createdAt(existingSOP.getCreatedAt())
+            .updatedAt(LocalDateTime.now())
+            .sopInitiation(sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()))
+            .reviews(fetchReviewerIds(updatedSOPDTO.getReviewUserIds())) // Changed method name
+            .build();
+
+    return sopCreationRepository.save(newVersion);
+}
+
+    private List<Integer> fetchReviewerIds(List<Integer> reviewUserIds) {
         if (reviewUserIds == null || reviewUserIds.isEmpty()) {
             return List.of();
         }
@@ -135,7 +183,7 @@ public class SOPCreationService {
                     ResponseEntity<UserDto> response = authenticationServiceClient.getUserById(userId);
 
                     if (response.getStatusCode().is2xxSuccessful()) {
-                        return response.getBody();
+                        return userId; // Return the ID instead of the UserDto
                     } else {
                         throw new RuntimeException("Failed to fetch user with ID: " + userId);
                     }
