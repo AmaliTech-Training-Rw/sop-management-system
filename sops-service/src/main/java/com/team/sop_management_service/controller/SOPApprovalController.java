@@ -17,7 +17,7 @@ public class SOPApprovalController {
     public ResponseEntity<SOPCreation> approveSOP(
             @PathVariable String sopId,
             @RequestParam int approverId) {
-        SOPCreation approvedSOP = approvalService.approveOrRejectSOP(sopId, approverId, true);
+        SOPCreation approvedSOP = approvalService.approveOrRejectSOP(sopId, approverId);
         return ResponseEntity.ok(approvedSOP);
     }
 
@@ -25,7 +25,7 @@ public class SOPApprovalController {
     public ResponseEntity<SOPCreation> rejectSOP(
             @PathVariable String sopId,
             @RequestParam int approverId) {
-        SOPCreation rejectedSOP = approvalService.approveOrRejectSOP(sopId, approverId, false);
+        SOPCreation rejectedSOP = approvalService.approveOrRejectSOP(sopId, approverId);
         return ResponseEntity.ok(rejectedSOP);
     }
 }

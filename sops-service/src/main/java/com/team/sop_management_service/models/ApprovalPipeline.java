@@ -1,9 +1,6 @@
 package com.team.sop_management_service.models;
 
-
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-
 import java.util.List;
 
 @Data

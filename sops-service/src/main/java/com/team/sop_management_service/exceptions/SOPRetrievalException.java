@@ -1,4 +1,4 @@
-package com.team.sop_management_service.error;
+package com.team.sop_management_service.exceptions;
 
 public class SOPRetrievalException extends RuntimeException {
     public SOPRetrievalException(String message, Throwable cause) {

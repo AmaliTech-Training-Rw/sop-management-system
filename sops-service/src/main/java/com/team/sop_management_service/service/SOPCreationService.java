@@ -5,7 +5,7 @@ import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.dto.SOPCreationDTO;
 import com.team.sop_management_service.enums.SOPStatus;
-import com.team.sop_management_service.error.SOPNotFoundException;
+import com.team.sop_management_service.exceptions.SOPNotFoundException;
 import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.repository.SOPCreationRepository;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +72,7 @@ public class SOPCreationService {
                 .build();
 
         sopCreationRepository.save(sopCreation);
-        notificationService.notifyAuthorOfReviewerComment(sopCreation);
+        //notificationService.notifyAuthorOfReviewerComment(sopCreation);
         logger.info("SOP submitted for review with ID: {}", id);
 
         return sopCreation;
@@ -117,6 +117,7 @@ public class SOPCreationService {
                 .content(updatedSOPDTO.getContent() != null ? updatedSOPDTO.getContent() : existingSOP.getContent())
                 .category(updatedSOPDTO.getCategory() != null ? updatedSOPDTO.getCategory() : existingSOP.getCategory())
                 .subCategory(updatedSOPDTO.getSubCategory() != null ? updatedSOPDTO.getSubCategory() : existingSOP.getSubCategory())
+                .approved(existingSOP.getApproved())
                 .status(existingSOP.getStatus()) // Carry over the status
                 .sopReferenceId(existingSOP.getSopReferenceId()) // Keep the reference ID for version tracking
                 .version(existingSOP.getVersion() + 1) // Increment version number

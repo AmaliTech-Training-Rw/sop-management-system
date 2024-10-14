@@ -3,7 +3,7 @@ package com.team.sop_management_service.controller;
 import com.team.sop_management_service.dto.SOPCreationDTO;
 import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.service.SOPCreationService;
-import com.team.sop_management_service.error.SOPNotFoundException;
+import com.team.sop_management_service.exceptions.SOPNotFoundException;
 import com.team.sop_management_service.enums.SOPStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -113,17 +112,6 @@ public class SOPCreationController {
     @ApiResponse(responseCode = "200", description = "All versions retrieved successfully")
     public ResponseEntity<List<SOPCreation>> getAllVersions(@PathVariable String sopReferenceId) {
         List<SOPCreation> versions = sopCreationService.getAllVersions(sopReferenceId);
-        return ResponseEntity.ok(versions);
-    }
-
-    @GetMapping("/{sopReferenceId}/versions/paged")
-    @Operation(summary = "Get all versions of an SOP (paged)", description = "Retrieves all versions of a Standard Operating Procedure with pagination")
-    @ApiResponse(responseCode = "200", description = "Paged versions retrieved successfully")
-    public ResponseEntity<Page<SOPCreation>> getAllVersionsPaged(
-            @PathVariable String sopReferenceId,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize) {
-        Page<SOPCreation> versions = sopCreationService.getAllVersionsPaged(sopReferenceId, pageNumber, pageSize);
         return ResponseEntity.ok(versions);
     }
 
