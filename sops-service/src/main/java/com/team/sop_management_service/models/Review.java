@@ -17,7 +17,7 @@ public class Review {
     @Id
     private String id;
 
-    private int reviewerId;  // ID of the user who reviewed the SOP
+    private Integer reviewerId;  // ID of the user who reviewed the SOP
     private boolean isConfirmed;  // Whether the review is a confirmation or return
 
     public static boolean isConfirmed() {
