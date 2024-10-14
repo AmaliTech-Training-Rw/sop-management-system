@@ -4,8 +4,8 @@ import com.team.sop_management_service.authenticationService.AuthenticationServi
 import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.dto.SOPInitiationDTO;
-import com.team.sop_management_service.error.InvalidSOPException;
-import com.team.sop_management_service.error.SOPNotFoundException;
+import com.team.sop_management_service.exceptions.InvalidSOPException;
+import com.team.sop_management_service.exceptions.SOPNotFoundException;
 import com.team.sop_management_service.models.SOPInitiation;
 import com.team.sop_management_service.models.ApprovalPipeline;
 import com.team.sop_management_service.repository.SOPInitiationRepository;
@@ -56,7 +56,7 @@ public class SOPInitiationService {
                     .build();
 
             SOPInitiation savedSOP = sopRepository.save(sopEntity);
-            notificationService.notifyAuthor(savedSOP);
+            //notificationService.notifyAuthor(savedSOP);
 
 
             return SOPInitiationDTO.builder()

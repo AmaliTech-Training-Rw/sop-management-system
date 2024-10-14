@@ -1,4 +1,4 @@
-package com.team.sop_management_service.error;
+package com.team.sop_management_service.exceptions;
 
 public class InvalidSOPException extends RuntimeException {
     public InvalidSOPException(String message) {

@@ -1,4 +1,4 @@
-package com.team.sop_management_service.error;
+package com.team.sop_management_service.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

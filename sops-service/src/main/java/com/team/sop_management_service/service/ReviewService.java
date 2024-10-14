@@ -4,7 +4,7 @@ import com.team.sop_management_service.authenticationService.AuthenticationServi
 import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.enums.SOPStatus;
-import com.team.sop_management_service.error.SOPNotFoundException;
+import com.team.sop_management_service.exceptions.SOPNotFoundException;
 import com.team.sop_management_service.models.Review;
 import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.models.SOPInitiation;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,6 +45,7 @@ public class ReviewService {
     @Transactional
     public SOPCreation reviewSOP(String sopId, int reviewerId, boolean isConfirmed, String comment) {
         // Fetch the SOP and SOPInitiation
+        SOPCreation sopCreation = new SOPCreation();
         SOPCreation sop = sopRepository.findById(sopId)
                 .orElseThrow(() -> new SOPNotFoundException("SOP not found"));
         SOPInitiation sopInitiation = sopInitiationRepository.findById(sop.getSopInitiation().getSopId())
@@ -87,17 +87,27 @@ public class ReviewService {
         // Add the review object, not just the reviewerId
         sop.getReviews().add(newReview.getReviewerId());
 
+        sop.setApproved(false);
+
         // Set the updated timestamp
         sop.setUpdatedAt(LocalDateTime.now());
 
         // Handle status based on the review result
         if (!isConfirmed) {
-            sopCreationService.updateSOPStatus(sopId, SOPStatus.REJECTED);
+            sop.setStatus(SOPStatus.REJECTED);
+            //sopCreationService.updateSOPStatus(sopId, SOPStatus.REJECTED);
             // notificationService.sendNotificationToAuthor(sopId, "SOP Rejected", comment);
         } else if (allReviewersConfirmed(sopInitiation, sop)) {
-            sopCreationService.updateSOPStatus(sopId, SOPStatus.REVIEWED);
+            sop.setStatus(SOPStatus.REVIEWED);
+
+            // sopCreationService.updateSOPStatus(sopId, SOPStatus.REVIEWED);
            //  notificationService.notifyApprover();
         }
+//        // Proceed with submission
+//        sopCreation = sopCreation.toBuilder()
+//                .status(SOPStatus.SUBMITTED)
+//                .updatedAt(LocalDateTime.now())
+//                .build();
 
         // Save the updated SOPCreation
         sopRepository.save(sop);

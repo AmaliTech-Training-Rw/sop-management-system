@@ -36,7 +36,7 @@ public class SOPCreation {
     private String subCategory;
 
     @NotNull(message = "Status is required")
-    private SOPStatus status;  // Enum to track draft, submitted, approved, etc.
+    private SOPStatus status;
 
     private List<Integer> reviews;
 

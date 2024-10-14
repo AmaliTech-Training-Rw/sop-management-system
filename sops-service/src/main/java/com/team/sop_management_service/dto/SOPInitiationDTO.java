@@ -14,8 +14,6 @@ import java.util.List;
 @Builder
 public class SOPInitiationDTO {
 
-    private String sopId;
-
     @NotBlank(message = "SOP title is mandatory")
     private String title;
 
@@ -23,6 +21,5 @@ public class SOPInitiationDTO {
 
     private ApprovalPipeline approvalPipeline; // List of user IDs or names in the approval pipeline
 
-    public SOPInitiationDTO(String sopId, @NotBlank(message = "SOP title is mandatory") String title, Visibility visibility) {
-    }
+
 }
