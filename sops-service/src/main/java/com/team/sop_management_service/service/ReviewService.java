@@ -5,6 +5,7 @@ import com.team.sop_management_service.authenticationService.UserDto;
 import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.enums.SOPStatus;
 import com.team.sop_management_service.exceptions.SOPNotFoundException;
+import com.team.sop_management_service.exceptions.UnreviewedException;
 import com.team.sop_management_service.models.Review;
 import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.models.SOPInitiation;
@@ -53,7 +54,7 @@ public class ReviewService {
 
         // Ensure SOP has been submitted
         if (sop.getStatus() != SOPStatus.SUBMITTED) {
-            throw new IllegalStateException("Cannot review an SOP that has not been submitted");
+            throw new UnreviewedException("Cannot review an SOP that has not been submitted");
         }
 
         // Fetch the reviewer User object using Feign client

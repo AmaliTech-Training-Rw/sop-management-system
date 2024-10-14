@@ -14,6 +14,8 @@ import java.util.List;
 @Builder
 public class SOPInitiationDTO {
 
+    private String sopId;
+
     @NotBlank(message = "SOP title is mandatory")
     private String title;
 

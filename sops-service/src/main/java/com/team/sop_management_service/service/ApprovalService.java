@@ -38,10 +38,20 @@ public class ApprovalService {
             throw new RuntimeException("You are not assigned to approve this SOP");
         }
 
-        // Set the status to APPROVED and isApproved to true
+        // Set the status based on the input (APPROVED or REJECTED)
         SOPStatus newStatus = SOPStatus.APPROVED;
         sop.setStatus(newStatus);
-        sop.setApproved(true);
+        SOPStatus rejectedStatus = SOPStatus.REJECTED;
+        sop.setStatus(rejectedStatus);
+
+
+        // Set isApproved based on the new status
+        if (newStatus == SOPStatus.APPROVED) {
+            sop.setApproved(true);  // Approved
+        } else if (rejectedStatus == SOPStatus.REJECTED) {
+            sop.setApproved(false); // Rejected
+        }
+
 
         log.info("SOP approved: id={}, title={}", sop.getId(), sop.getTitle());
 

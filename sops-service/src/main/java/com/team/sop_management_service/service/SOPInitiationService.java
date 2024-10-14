@@ -60,7 +60,7 @@ public class SOPInitiationService {
 
 
             return SOPInitiationDTO.builder()
-                    //.sopId(savedSOP.getSopId())
+                    .sopId(savedSOP.getSopId())
                     .title(savedSOP.getTitle())
                     .visibility(savedSOP.getVisibility())
                     .approvalPipeline(savedSOP.getApprovalPipeline())
@@ -82,7 +82,7 @@ public class SOPInitiationService {
         try {
             return sopRepository.findAll().stream()
                     .map(sop -> SOPInitiationDTO.builder()
-                            //.sopId(sop.getSopId())
+                            .sopId(sop.getSopId())
                             .title(sop.getTitle())
                             .visibility(sop.getVisibility())
                             .approvalPipeline(sop.getApprovalPipeline())
@@ -99,7 +99,7 @@ public class SOPInitiationService {
         try {
             return sopRepository.findByVisibility(visibility).stream()
                     .map(sop -> SOPInitiationDTO.builder()
-                            //.sopId(sop.getSopId())
+                            .sopId(sop.getSopId())
                             .title(sop.getTitle())
                             .visibility(sop.getVisibility())
                             .approvalPipeline(sop.getApprovalPipeline())
