@@ -1,0 +1,200 @@
+version: '3.8'
+
+services:
+  discovery-service:
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${DISCOVERY_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-discovery-service:${VERSION}
+    container_name: ${PROJECT_NAME}-discovery-service
+    ports:
+      - "${DISCOVERY_SERVICE_PORT}:${DISCOVERY_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SERVER_PORT: ${DISCOVERY_SERVICE_PORT}
+    networks:
+      - microservices-network
+    healthcheck:
+      test: |
+        wget --no-verbose --tries=1 --spider http://localhost:${DISCOVERY_SERVICE_PORT}/actuator/health || exit 1 &&
+        wget --no-verbose --tries=1 --spider http://localhost:${DISCOVERY_SERVICE_PORT}/eureka/apps || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  authentication-service:
+    build:
+      context: ./authentication-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${AUTHENTICATION_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-authentication-service:${VERSION}
+    container_name: ${PROJECT_NAME}-authentication-service
+    ports:
+      - "${AUTHENTICATION_SERVICE_PORT}:${AUTHENTICATION_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${AUTHENTICATION_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: authentication-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${AUTHENTICATION_SERVICE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  comments-service:
+    build:
+      context: ./comments-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${COMMENTS_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-comments-service:${VERSION}
+    container_name: ${PROJECT_NAME}-comments-service
+    ports:
+      - "${COMMENTS_SERVICE_PORT}:${COMMENTS_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${COMMENTS_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: comments-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${COMMENTS_SERVICE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${GATEWAY_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-gateway-service:${VERSION}
+    container_name: ${PROJECT_NAME}-gateway-service
+    ports:
+      - "${GATEWAY_SERVICE_PORT}:${GATEWAY_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${GATEWAY_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: gateway-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${GATEWAY_SERVICE_PORT}/actuator/health || exit 1
+      interval: 40s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  kafka-service:
+    build:
+      context: ./kafka-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${KAFKA_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-kafka-service:${VERSION}
+    container_name: ${PROJECT_NAME}-kafka-service
+    ports:
+      - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${KAFKA_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: kafka-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${KAFKA_SERVICE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  notifications-service:
+    build:
+      context: ./notifications-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${NOTIFICATIONS_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-notifications-service:${VERSION}
+    container_name: ${PROJECT_NAME}-notifications-service
+    ports:
+      - "${NOTIFICATIONS_SERVICE_PORT}:${NOTIFICATIONS_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${NOTIFICATIONS_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: notifications-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${NOTIFICATIONS_SERVICE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  sops-service:
+    build:
+      context: ./sops-service
+      dockerfile: Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION}
+        APP_PORT: ${SOPS_SERVICE_PORT}
+    image: ${DOCKER_REGISTRY}/${PROJECT_NAME}-sops-service:${VERSION}
+    container_name: ${PROJECT_NAME}-sops-service
+    ports:
+      - "${SOPS_SERVICE_PORT}:${SOPS_SERVICE_PORT}"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka/
+      SERVER_PORT: ${SOPS_SERVICE_PORT}
+      SPRING_APPLICATION_NAME: sops-service
+    networks:
+      - microservices-network
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${SOPS_SERVICE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  microservices-network:
+    name: ${PROJECT_NAME}-network
+    driver: bridge
