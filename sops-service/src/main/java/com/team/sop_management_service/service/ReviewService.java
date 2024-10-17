@@ -2,7 +2,6 @@ package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.authenticationService.AuthenticationServiceClient;
 import com.team.sop_management_service.authenticationService.UserDto;
-import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.enums.SOPStatus;
 import com.team.sop_management_service.exceptions.SOPNotFoundException;
 import com.team.sop_management_service.exceptions.UnreviewedException;
@@ -26,27 +25,20 @@ public class ReviewService {
 
     private final SOPCreationRepository sopRepository;
     private final SOPInitiationRepository sopInitiationRepository;
-    private final SOPCreationService sopCreationService;
     private final AuthenticationServiceClient authService;
-    private final NotificationService notificationService;
 
     @Autowired
     public ReviewService(SOPCreationRepository sopRepository,
                          SOPInitiationRepository sopInitiationRepository,
-                         SOPCreationService sopCreationService,
-                         NotificationService notificationService,
                          AuthenticationServiceClient authService) {
         this.sopRepository = sopRepository;
         this.sopInitiationRepository = sopInitiationRepository;
-        this.sopCreationService = sopCreationService;
         this.authService = authService;
-        this.notificationService = notificationService;
     }
 
     @Transactional
     public SOPCreation reviewSOP(String sopId, int reviewerId, boolean isConfirmed, String comment) {
         // Fetch the SOP and SOPInitiation
-        SOPCreation sopCreation = new SOPCreation();
         SOPCreation sop = sopRepository.findById(sopId)
                 .orElseThrow(() -> new SOPNotFoundException("SOP not found"));
         SOPInitiation sopInitiation = sopInitiationRepository.findById(sop.getSopInitiation().getSopId())
@@ -96,24 +88,12 @@ public class ReviewService {
         // Handle status based on the review result
         if (!isConfirmed) {
             sop.setStatus(SOPStatus.REJECTED);
-            //sopCreationService.updateSOPStatus(sopId, SOPStatus.REJECTED);
-            // notificationService.sendNotificationToAuthor(sopId, "SOP Rejected", comment);
         } else if (allReviewersConfirmed(sopInitiation, sop)) {
             sop.setStatus(SOPStatus.REVIEWED);
-
-            // sopCreationService.updateSOPStatus(sopId, SOPStatus.REVIEWED);
-           //  notificationService.notifyApprover();
         }
-//        // Proceed with submission
-//        sopCreation = sopCreation.toBuilder()
-//                .status(SOPStatus.SUBMITTED)
-//                .updatedAt(LocalDateTime.now())
-//                .build();
-
         // Save the updated SOPCreation
         sopRepository.save(sop);
       //  notificationService.notifyAuthor(sop);
-
         return sop;
     }
 

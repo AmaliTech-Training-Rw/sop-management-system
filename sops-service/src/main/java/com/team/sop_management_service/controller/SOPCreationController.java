@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/sop")
-@RequiredArgsConstructor
 @Tag(name = "SOP Management", description = "Endpoints for creating, updating, and reviewing SOPs")
 public class SOPCreationController {
     private static final Logger logger = LoggerFactory.getLogger(SOPCreationService.class);
 
 
     private final SOPCreationService sopCreationService;
+
+    @Autowired
+    public SOPCreationController(SOPCreationService sopCreationService) {
+        this.sopCreationService = sopCreationService;
+    }
 
     @PostMapping("/create")
     @Operation(summary = "Create a new SOP",

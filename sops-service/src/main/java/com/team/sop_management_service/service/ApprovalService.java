@@ -8,17 +8,22 @@ import com.team.sop_management_service.models.SOPCreation;
 import com.team.sop_management_service.repository.SOPCreationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ApprovalService {
 
     private final SOPCreationRepository sopRepository;
-    private final SOPCreationService sopCreationService;
     private final AuthenticationServiceClient authService;
+
+    @Autowired
+    public ApprovalService(SOPCreationRepository sopRepository, AuthenticationServiceClient authService) {
+        this.sopRepository = sopRepository;
+        this.authService = authService;
+    }
 
     @Transactional
     public SOPCreation approveOrRejectSOP(String sopId, int approverId) {
@@ -44,15 +49,12 @@ public class ApprovalService {
         SOPStatus rejectedStatus = SOPStatus.REJECTED;
         sop.setStatus(rejectedStatus);
 
-
         // Set isApproved based on the new status
         if (newStatus == SOPStatus.APPROVED) {
             sop.setApproved(true);  // Approved
         } else if (rejectedStatus == SOPStatus.REJECTED) {
             sop.setApproved(false); // Rejected
         }
-
-
         log.info("SOP approved: id={}, title={}", sop.getId(), sop.getTitle());
 
         return sopRepository.save(sop);

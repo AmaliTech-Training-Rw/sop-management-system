@@ -2,7 +2,6 @@ package com.team.sop_management_service.service;
 
 import com.team.sop_management_service.authenticationService.AuthenticationServiceClient;
 import com.team.sop_management_service.authenticationService.UserDto;
-import com.team.sop_management_service.config.NotificationService;
 import com.team.sop_management_service.dto.SOPInitiationDTO;
 import com.team.sop_management_service.exceptions.InvalidSOPException;
 import com.team.sop_management_service.exceptions.SOPNotFoundException;
@@ -28,13 +27,12 @@ public class SOPInitiationService {
 
     private final SOPInitiationRepository sopRepository;
     private final AuthenticationServiceClient authenticationServiceClient;
-    private final NotificationService notificationService;
 
     @Autowired
-    public SOPInitiationService(SOPInitiationRepository sopRepository, AuthenticationServiceClient authenticationServiceClient, NotificationService notificationService) {
+    public SOPInitiationService(SOPInitiationRepository sopRepository,
+                                AuthenticationServiceClient authenticationServiceClient) {
         this.sopRepository = sopRepository;
         this.authenticationServiceClient = authenticationServiceClient;
-        this.notificationService = notificationService;
     }
 
 
@@ -127,8 +125,6 @@ public class SOPInitiationService {
             throw new RuntimeException("Error validating " + role, e);
         }
     }
-
-
     // Validate SOP details
     private void validateSOP(SOPInitiationDTO sop) {
         if (sop.getTitle() == null || sop.getTitle().isEmpty()) {
@@ -139,13 +135,11 @@ public class SOPInitiationService {
         }
         validateApprovalPipeline(sop.getApprovalPipeline(), sop.getVisibility()); // Validate approval pipeline
     }
-
     private void validateApprovalPipeline(ApprovalPipeline pipeline, Visibility visibility) {
         if (pipeline == null || pipeline.getAuthor() == 0 || pipeline.getApprover() == 0 ||
                 pipeline.getReviewers() == null || pipeline.getReviewers().isEmpty()) {
             throw new InvalidSOPException("Invalid approval pipeline. Author, approver, and reviewers must be defined.");
         }
-
         int hod = pipeline.getApprover();
 
         // For department visibility, ensure all are from the same department
@@ -155,12 +149,10 @@ public class SOPInitiationService {
                 throw new InvalidSOPException("For department visibility, all staff must be from the same department.");
             }
         }
-
         // Approver must be HoD or from the same department
         if (!isValidApprover(pipeline.getApprover(), hod)) {
             throw new InvalidSOPException("Approver must be the HoD or from the same department as the HoD.");
         }
-
         logger.info("Approval pipeline validated successfully");
     }
 
@@ -178,7 +170,6 @@ public class SOPInitiationService {
                 return department1 != null && department1.equals(department2);
             }
         }
-
         return false;
     }
 
