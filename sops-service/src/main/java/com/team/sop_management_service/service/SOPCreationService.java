@@ -11,6 +11,7 @@ import com.team.sop_management_service.repository.SOPCreationRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +26,24 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class SOPCreationService {
     private static final Logger logger = LoggerFactory.getLogger(SOPCreationService.class);
+
     private final SOPCreationRepository sopCreationRepository;
     private final AuthenticationServiceClient authenticationServiceClient;
     private final SOPInitiationService sopInitiationService;
     private final NotificationService notificationService;
+
+    @Autowired
+    public SOPCreationService(SOPCreationRepository sopCreationRepository,
+                              AuthenticationServiceClient authenticationServiceClient,
+                              SOPInitiationService sopInitiationService,
+                              NotificationService notificationService) {
+        this.sopCreationRepository = sopCreationRepository;
+        this.authenticationServiceClient = authenticationServiceClient;
+        this.sopInitiationService = sopInitiationService;
+        this.notificationService = notificationService;
+    }
 
     public SOPCreation createSOP(SOPCreationDTO sopCreationDTO) {
         logger.info("Creating new SOP: {}", sopCreationDTO.getTitle());
@@ -47,7 +59,8 @@ public class SOPCreationService {
                 .version(1)
                 .status(SOPStatus.DRAFT)
                 .isCurrentVersion(true)
-                .sopReferenceId(sopCreationDTO.getSopReferenceId() != null ? sopCreationDTO.getSopReferenceId() : UUID.randomUUID().toString())
+                .sopReferenceId(sopCreationDTO.getSopReferenceId() != null ?
+                        sopCreationDTO.getSopReferenceId() : UUID.randomUUID().toString())
                 .sopInitiation(sopInitiationService.getSOPById(sopCreationDTO.getSopInitiationId()))
                 .reviews(fetchReviewerIds(sopCreationDTO.getReviewUserIds()))
                 .build();
@@ -113,20 +126,26 @@ public class SOPCreationService {
         // Create a new version of the SOP
         SOPCreation newVersion = SOPCreation.builder()
                 .title(updatedSOPDTO.getTitle() != null ? updatedSOPDTO.getTitle() : existingSOP.getTitle())
-                .description(updatedSOPDTO.getDescription() != null ? updatedSOPDTO.getDescription() : existingSOP.getDescription())
-                .content(updatedSOPDTO.getContent() != null ? updatedSOPDTO.getContent() : existingSOP.getContent())
-                .category(updatedSOPDTO.getCategory() != null ? updatedSOPDTO.getCategory() : existingSOP.getCategory())
-                .subCategory(updatedSOPDTO.getSubCategory() != null ? updatedSOPDTO.getSubCategory() : existingSOP.getSubCategory())
+                .description(updatedSOPDTO.getDescription() != null ? updatedSOPDTO.getDescription() :
+                        existingSOP.getDescription())
+                .content(updatedSOPDTO.getContent() != null ? updatedSOPDTO.getContent() :
+                        existingSOP.getContent())
+                .category(updatedSOPDTO.getCategory() != null ? updatedSOPDTO.getCategory() :
+                        existingSOP.getCategory())
+                .subCategory(updatedSOPDTO.getSubCategory() != null ? updatedSOPDTO.getSubCategory() :
+                        existingSOP.getSubCategory())
                 .approved(existingSOP.getApproved())
-                .status(existingSOP.getStatus()) // Carry over the status
-                .sopReferenceId(existingSOP.getSopReferenceId()) // Keep the reference ID for version tracking
-                .version(existingSOP.getVersion() + 1) // Increment version number
-                .isCurrentVersion(true) // Mark the new version as current
-                .createdAt(existingSOP.getCreatedAt()) // Keep the original creation date
-                .updatedAt(LocalDateTime.now()) // Update the timestamp
+                .status(existingSOP.getStatus())
+                .sopReferenceId(existingSOP.getSopReferenceId())
+                .version(existingSOP.getVersion() + 1)
+                .isCurrentVersion(true)
+                .createdAt(existingSOP.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
                 .sopInitiation(updatedSOPDTO.getSopInitiationId() != null ?
-                        sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()) : existingSOP.getSopInitiation())
-                .reviews(updatedSOPDTO.getReviewUserIds() != null ? fetchReviewerIds(updatedSOPDTO.getReviewUserIds()) : existingSOP.getReviews())
+                        sopInitiationService.getSOPById(updatedSOPDTO.getSopInitiationId()) :
+                        existingSOP.getSopInitiation())
+                .reviews(updatedSOPDTO.getReviewUserIds() != null ? fetchReviewerIds(updatedSOPDTO.getReviewUserIds()) :
+                        existingSOP.getReviews())
                 .build();
 
         // Save the new version of the SOP
@@ -197,7 +216,8 @@ public class SOPCreationService {
 
     private SOPCreation getSpecificVersion(String sopReferenceId, int version) throws SOPNotFoundException {
         return sopCreationRepository.findBySopReferenceIdAndVersion(sopReferenceId, version)
-                .orElseThrow(() -> new SOPNotFoundException("Version " + version + " not found for SOP with reference ID: " + sopReferenceId));
+                .orElseThrow(() -> new SOPNotFoundException("Version " + version +
+                        " not found for SOP with reference ID: " + sopReferenceId));
     }
 
     public List<SOPCreation> getAllVersionsPaged() {
