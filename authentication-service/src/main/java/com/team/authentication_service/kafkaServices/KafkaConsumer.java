@@ -27,10 +27,7 @@ public class KafkaConsumer {
     @KafkaListener(topics = "user-details-req", errorHandler = "customErrorHandler", groupId = "auth-service")
     public void consumeUserDetailsConsumer(ConsumerRecord<String, String> record) {
         try {
-            System.out.println("#######################");
-            System.out.println("Authenticaiton user details consumer req");
-            System.out.println(record.value());
-            System.out.println("#######################");
+//          Sending the user details via another producer
             UserDto userDto = userService.getUserById(Integer.parseInt(record.value()));
             kafkaProducer.sendMessage("user-details-res", userDto);
         } catch (Exception e) {

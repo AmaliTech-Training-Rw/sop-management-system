@@ -4,6 +4,8 @@ import com.team.authentication_service.dtos.CreateRoleRequestDto;
 import com.team.authentication_service.models.Role;
 import com.team.authentication_service.models.User;
 import com.team.authentication_service.repositories.RoleRepository;
+import com.team.authentication_service.utils.errorHandlers.ReturnableException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +20,14 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public void add(CreateRoleRequestDto role) throws Exception {
-        try {
-            roleRepository.save(
-                    Role.builder().name(role.getRoleName()).build()
-            );
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public void add(CreateRoleRequestDto role) throws ReturnableException {
+        Optional<Role> newRole = roleRepository.findByName(role.getRoleName());
+
+        if (newRole.isPresent()) throw new ReturnableException("Role already exists", HttpStatus.BAD_REQUEST);
+
+        roleRepository.save(
+                Role.builder().name(role.getRoleName()).build()
+        );
     }
 
     public List<Role> getRoles() throws Exception {

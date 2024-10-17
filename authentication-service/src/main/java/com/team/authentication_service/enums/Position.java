@@ -2,5 +2,6 @@ package com.team.authentication_service.enums;
 
 public enum Position {
     STAFF,
-    HOD
+    HOD,
+    SUPER_ADMIN
 }

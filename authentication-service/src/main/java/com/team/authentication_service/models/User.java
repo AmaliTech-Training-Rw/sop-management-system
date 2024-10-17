@@ -39,6 +39,7 @@ public class User implements UserDetails {
     public Department department;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     public Position position;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -1,9 +1,12 @@
 package com.team.authentication_service.controllers;
 
 import com.team.authentication_service.dtos.AssignRoleReqDto;
+import com.team.authentication_service.dtos.ResponseDto;
 import com.team.authentication_service.models.UserRole;
 import com.team.authentication_service.services.UserRoleService;
+import com.team.authentication_service.utils.errorHandlers.ReturnableException;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,22 +26,35 @@ public class UserRoleController {
     }
 
     @PostMapping("/assign")
-    public ResponseEntity<String> assignRole(@Valid @RequestBody AssignRoleReqDto assignRoleReqDto) throws Exception {
+    public ResponseEntity<Object> assignRole(@Valid @RequestBody AssignRoleReqDto assignRoleReqDto) throws Exception {
         try {
+//          Assign role to user
             userRoleService.assignRole(assignRoleReqDto);
-            return ResponseEntity.ok("Assign role successfully");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.ok(
+                    ResponseDto.builder()
+                            .message("Role assigned")
+                            .data(null)
+                            .build()
+            );
+        } catch (ReturnableException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(ResponseDto.builder().message(e.getMessage()).data(null).build());
         }
     }
 
     @GetMapping("/roles/{userId}")
     public ResponseEntity<Object> getRoles(@PathVariable int userId) throws Exception {
         try {
+//          Get roles of a user
             List<UserRole> roles = userRoleService.getAllUserRoles(userId);
+
             return ResponseEntity.ok(roles);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (ReturnableException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(
+                    ResponseDto.builder()
+                            .message(e.getMessage())
+                            .data(null)
+                            .build()
+            );
         }
     }
 }
