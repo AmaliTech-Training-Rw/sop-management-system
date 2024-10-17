@@ -1,4 +1,4 @@
-package com.team.gateway_service.dtos;
+package com.team.authentication_service.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ValidateTokenResponseDto {
-    private AuthenticatedUserHeaders headers;
+public class ResponseDto<T> {
+    private String message;
+    private T data;
 }

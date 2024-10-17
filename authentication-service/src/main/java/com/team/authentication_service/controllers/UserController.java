@@ -1,7 +1,9 @@
 package com.team.authentication_service.controllers;
 
+import com.team.authentication_service.dtos.ResponseDto;
 import com.team.authentication_service.dtos.UserDto;
 import com.team.authentication_service.services.UserService;
+import com.team.authentication_service.utils.errorHandlers.ReturnableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +21,34 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUser(@PathVariable int id) {
+    public ResponseEntity<Object> getUserInfo(@PathVariable int id) {
         try {
+//          Get user information by id
             UserDto userDto = userService.getUserById(id);
-            System.out.println("############## getting user dto  ##########");
-            System.out.println(userDto);
-            System.out.println("############## getting user dto  ##########");
-            return ResponseEntity.ok(userDto);
+
+            return ResponseEntity.ok(
+                    ResponseDto.builder()
+                            .message("Success")
+                            .data(userDto)
+                            .build()
+            );
+        } catch (ReturnableException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                            ResponseDto.builder()
+                                    .message(e.getMessage())
+                                    .data(null)
+                                    .build()
+                    );
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                            ResponseDto.builder()
+                                    .message("Internal server error. Contact tech support.")
+                                    .data(null)
+                                    .build()
+                    );
         }
     }
 }

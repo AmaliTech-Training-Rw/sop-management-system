@@ -6,6 +6,8 @@ import com.team.authentication_service.models.User;
 import com.team.authentication_service.models.UserRole;
 import com.team.authentication_service.repositories.UserRepository;
 import com.team.authentication_service.repositories.UserRoleRepository;
+import com.team.authentication_service.utils.errorHandlers.ReturnableException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,48 +25,43 @@ public class UserService {
     }
 
     public UserDto getUserById(int id) throws Exception {
-        try {
-            Optional<User> possibleUser = userRepository.findById(id);
-            List<UserRole> userRoles = userRoleRepository.findByUserId(id);
+        Optional<User> possibleUser = userRepository.findById(id);
+        List<UserRole> userRoles = userRoleRepository.findByUserId(id);
 
 
-            if (possibleUser.isEmpty()) throw new Exception("No user with given id");
+        if (possibleUser.isEmpty()) throw new ReturnableException("No user with given id", HttpStatus.NOT_FOUND);
 
-            User user = possibleUser.get();
+        User user = possibleUser.get();
 
-            System.out.println(user);
-            System.out.println(userRoles);
+        System.out.println(user);
+        System.out.println(userRoles);
 
 
-            UserDto userDto = UserDto.builder()
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .position(user.getPosition().toString())
-                    .roles(
-                            userRoles
-                                    .stream()
-                                    .map(
-                                            userRole -> userRole
-                                                    .getRole()
-                                                    .getName()
-                                    )
-                                    .toList()
-                    )
-                    .department(
-                            DepartmentDto
-                                    .builder()
-                                    .id(
-                                            user.getDepartment().getId()
-                                    ).name(
-                                            user.getDepartment().getName()
-                                    ).build()
-                    )
-                    .build();
+        UserDto userDto = UserDto.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .position(user.getPosition().toString())
+                .roles(
+                        userRoles
+                                .stream()
+                                .map(
+                                        userRole -> userRole
+                                                .getRole()
+                                                .getName()
+                                )
+                                .toList()
+                )
+                .department(
+                        DepartmentDto
+                                .builder()
+                                .id(
+                                        user.getDepartment().getId()
+                                ).name(
+                                        user.getDepartment().getName()
+                                ).build()
+                )
+                .build();
 
-            return userDto;
-
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        return userDto;
     }
 }

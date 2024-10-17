@@ -7,6 +7,8 @@ import com.team.authentication_service.models.UserRole;
 import com.team.authentication_service.repositories.RoleRepository;
 import com.team.authentication_service.repositories.UserRepository;
 import com.team.authentication_service.repositories.UserRoleRepository;
+import com.team.authentication_service.utils.errorHandlers.ReturnableException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,9 +31,8 @@ public class UserRoleService {
         Optional<User> user = userRepository.findById(assignRoleReqDto.getUserId());
         Optional<Role> role = roleRepository.findById(assignRoleReqDto.getRoleId());
 
-        if (user.isEmpty()) throw new Exception("Couldn't find user of id " + assignRoleReqDto.getUserId());
-
-        if (role.isEmpty()) throw new Exception("Couldn't find role of id " + assignRoleReqDto.getRoleId());
+        if (user.isEmpty())
+            throw new ReturnableException("Couldn't find user of id " + assignRoleReqDto.getUserId(), HttpStatus.NOT_FOUND);
 
         try {
             userRoleRepository.save(
@@ -41,16 +42,16 @@ public class UserRoleService {
                             .build()
             );
         } catch (Exception e) {
-            throw new Exception("Couldn't assign role " + assignRoleReqDto.getRoleId());
+            throw new ReturnableException("Couldn't assign role " + assignRoleReqDto.getRoleId(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public List<UserRole> getAllUserRoles(int userId) throws Exception {
-        List<UserRole> roles = userRoleRepository.findByUserId(userId);
         try {
+            List<UserRole> roles = userRoleRepository.findByUserId(userId);
             return roles;
         } catch (Exception e) {
-            throw new Exception("Couldn't get all user roles");
+            throw new ReturnableException("Couldn't get all user roles", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

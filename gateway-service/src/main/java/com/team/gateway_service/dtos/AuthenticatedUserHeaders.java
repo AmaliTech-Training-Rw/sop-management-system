@@ -5,10 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ValidateTokenResponseDto {
-    private AuthenticatedUserHeaders headers;
+public class AuthenticatedUserHeaders {
+    private String email;
+    private List<String> roles;
+    private String position;
 }

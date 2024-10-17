@@ -25,8 +25,7 @@ public class UserDetailsServiceCustomImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-
-        return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), user.orElseThrow().getAuthorities());
-
+        return new org.springframework.security.core.userdetails
+                .User(user.get().getEmail(), user.get().getPassword(), user.orElseThrow().getAuthorities());
     }
 }
